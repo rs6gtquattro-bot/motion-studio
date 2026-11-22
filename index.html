@@ -452,15 +452,42 @@
     .projects-grid, .terms-panel { grid-template-columns: 1fr; }
     .cmd-trigger { display: none; }
   }
-  @media (max-width: 640px) {
-    header.top { padding: 14px 16px; }
-    .tg-top-btn { white-space: nowrap; font-size: 12px; padding: 0 14px; }
-    .wrap { padding: 0 16px; }
-    .hero { padding: 54px 0 40px; }
-    .terms-panel { padding: 22px; }
+  @media (max-width: 768px) {
+    header.top { padding: 10px 14px; gap: 8px; }
+    .brand-pill { font-size: 12px; gap: 8px; white-space: nowrap; }
+    .tg-top-btn { height: 36px; white-space: nowrap; font-size: 11.5px; padding: 0 13px; }
+    .wrap { padding: 0 14px; }
+    .hero { padding: 26px 0 22px; }
+    .hero-kicker { font-size: 10px; padding: 5px 10px; margin-bottom: 14px; gap: 6px; flex-wrap: wrap; }
+    h1.hero-h { font-size: clamp(22px, 6.2vw, 30px); line-height: 1.15; margin-bottom: 12px; }
+    .hero-sub { font-size: 14px; line-height: 1.5; margin-bottom: 18px; }
+    .hero-bar { gap: 8px; }
+    .mag-cta, .copy-tg { height: 44px; font-size: 12.5px; padding: 0 14px; }
+    .mag-cta { flex: 1; justify-content: center; min-width: 160px; white-space: nowrap; }
+    .copy-tg { flex: 1; justify-content: center; font-size: 11.5px; gap: 6px; min-width: 150px; white-space: nowrap; }
+    .projects-grid { gap: 14px; margin: 12px 0 36px; }
+    .proj-card { border-radius: 20px; }
+    .proj-preview { height: 176px; }
+    .proj-body { padding: 16px; gap: 12px; }
+    .proj-title { font-size: 18px; margin-bottom: 6px; }
+    .proj-desc { font-size: 13px; line-height: 1.48; margin-bottom: 10px; }
+    .m-tag { font-size: 10px; padding: 3px 8px; }
+    .open-demo { height: 40px; font-size: 12.5px; }
+    .terms-panel { padding: 18px; gap: 18px; border-radius: 22px; margin-bottom: 84px; }
+    .terms-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .term-box { padding: 12px; border-radius: 14px; }
+    .term-box strong { font-size: 14px; margin-bottom: 3px; }
+    .term-box span { font-size: 11.5px; line-height: 1.38; }
+    .offer-cta-box { padding: 16px; border-radius: 16px; gap: 10px; }
+    .offer-cta-box h3 { font-size: 16.5px; }
+    .offer-cta-box p { font-size: 13px; }
+    .btn-acid-full { height: 44px; font-size: 13px; }
+    .dock-wrap { bottom: 12px; max-width: calc(100vw - 20px); }
+    .rubber-dock { gap: 4px; padding: 5px 7px; }
+    .dock-item { height: 32px; padding: 0 9px; font-size: 10px; }
+  }
+  @media (max-width: 390px) {
     .terms-grid { grid-template-columns: 1fr; }
-    .rubber-dock { gap: 5px; padding: 6px 8px; }
-    .dock-item { padding: 0 10px; font-size: 10.5px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -621,7 +648,7 @@
     <button class="pal-row" data-href="./kuro-synth/index.html"><span>01 · KURO // LAB — Аналоговые синтезаторы</span><small>Web Audio · Jelly</small></button>
     <button class="pal-row" data-href="./solis-atelier/index.html"><span>02 · SOLIS // NOCTURNE — Спекизи-бар</span><small>Pin Scroll · 3D Ticket</small></button>
     <button class="pal-row" data-href="./apex-fpv/index.html"><span>03 · APEX // FPV — Кино-дроны 240 км/ч</span><small>Goo · Glass Lens</small></button>
-    <button class="pal-row" data-action="brief"><span>Оставить заявку на разработку сайта</span><small>Telegram Bot</small></button>
+    <button class="pal-row" data-action="brief"><span>Оставить заявку на разработку сайта</span><small>Telegram</small></button>
     <button class="pal-row" data-action="copy"><span>Скопировать контакт Telegram</span><small id="palTgHint">@iamhaveyou</small></button>
   </div>
 </dialog>
@@ -637,30 +664,23 @@
     <div class="b-field"><label for="brContact">TELEGRAM / ТЕЛЕФОН</label><input id="brContact" required placeholder="@username"></div>
     <div class="b-field"><label for="brNiche">НИША БИЗНЕСА</label><input id="brNiche" required placeholder="Студия, бар, автосервис, бренд..."></div>
     <button class="btn-acid-full" style="width:100%" type="submit" id="briefSubmit">Отправить в Telegram</button>
-    <div id="briefNote" style="margin-top:10px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--muted)">Отвечу в течение 15 минут</div>
+    <div id="briefNote" style="margin-top:12px;text-align:center;font-family:var(--font-mono);font-size:11.5px;line-height:1.5;color:var(--muted)">Отвечу в течение 15 минут</div>
   </form>
 </dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
-  // === ГЛАВНЫЙ КОНФИГ КОНТАКТОВ ===
-  const CONTACT_CONFIG = {
-    TG_HANDLE: "@iamhaveyou",
-    BOT_TOKEN: "",
-    CHAT_ID: ""
-  };
+  const STUDIO_TG_HANDLE = "@iamhaveyou";
+  const STUDIO_TG_URL = "https://t.me/iamhaveyou";
 
-  // Sync TG links & handles
-  const cleanHandle = CONTACT_CONFIG.TG_HANDLE.replace(/^@/, "");
-  const tgUrl = `https://t.me/${cleanHandle}`;
-  document.getElementById("topTgLink").href = tgUrl;
-  document.getElementById("offerTgLink").href = tgUrl;
-  document.getElementById("tgHandleText").textContent = CONTACT_CONFIG.TG_HANDLE;
-  document.getElementById("palTgHint").textContent = CONTACT_CONFIG.TG_HANDLE;
+  document.getElementById("topTgLink").href = STUDIO_TG_URL;
+  document.getElementById("offerTgLink").href = STUDIO_TG_URL;
+  document.getElementById("tgHandleText").textContent = STUDIO_TG_HANDLE;
+  document.getElementById("palTgHint").textContent = STUDIO_TG_HANDLE;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!prefersReduced && window.Lenis) {
+  if (!prefersReduced && window.Lenis && window.innerWidth > 1020 && window.matchMedia("(pointer: fine)").matches) {
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -757,7 +777,7 @@
   const copyBtn = document.getElementById("copyTgBtn");
   const copyState = document.getElementById("copyState");
   async function copyTg() {
-    try { await navigator.clipboard.writeText(CONTACT_CONFIG.TG_HANDLE); } catch (_) {}
+    try { await navigator.clipboard.writeText(STUDIO_TG_HANDLE); } catch (_) {}
     copyBtn.classList.add("copied");
     copyState.textContent = "скопировано!";
     setTimeout(() => { copyBtn.classList.remove("copied"); copyState.textContent = "скопировать"; }, 1800);
@@ -803,37 +823,45 @@
     r.addEventListener("click", () => {
       cmdDialog.close();
       if (r.dataset.href) window.location.href = r.dataset.href;
-      else if (r.dataset.action === "brief") briefDialog.showModal();
+      else if (r.dataset.action === "brief") openBriefModal();
       else if (r.dataset.action === "copy") copyTg();
     });
   });
 
-  document.getElementById("openBriefHero").addEventListener("click", () => briefDialog.showModal());
-  document.getElementById("openBriefTerms").addEventListener("click", () => briefDialog.showModal());
+  const briefBtn = document.getElementById("briefSubmit");
+  const briefNote = document.getElementById("briefNote");
+  function openBriefModal() {
+    briefBtn.textContent = "Отправить в Telegram";
+    briefNote.style.color = "var(--muted)";
+    briefNote.textContent = "Отвечу в течение 15 минут";
+    briefDialog.showModal();
+  }
+  document.getElementById("openBriefHero").addEventListener("click", openBriefModal);
+  document.getElementById("openBriefTerms").addEventListener("click", openBriefModal);
   document.getElementById("closeBriefBtn").addEventListener("click", () => briefDialog.close());
 
-  document.getElementById("briefForm").addEventListener("submit", async (e) => {
+  document.getElementById("briefForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const btn = document.getElementById("briefSubmit");
-    const note = document.getElementById("briefNote");
-    btn.textContent = "Отправка...";
-    const text = `Заявка на разработку сайта\nИмя: ${document.getElementById("brName").value}\nКонтакт: ${document.getElementById("brContact").value}\nНиша: ${document.getElementById("brNiche").value}`;
-    try {
-      if (CONTACT_CONFIG.BOT_TOKEN && CONTACT_CONFIG.CHAT_ID) {
-        await fetch(`https://api.telegram.org/bot${CONTACT_CONFIG.BOT_TOKEN}/sendMessage`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: CONTACT_CONFIG.CHAT_ID, text })
-        });
-        note.textContent = "Заявка доставлена в Telegram!";
-      } else {
-        await new Promise((r) => setTimeout(r, 550));
-        note.textContent = "Демо-режим: впишите BOT_TOKEN и CHAT_ID в CONTACT_CONFIG.";
-      }
-      btn.textContent = "Отправлено!";
-      setTimeout(() => { briefDialog.close(); btn.textContent = "Отправить в Telegram"; }, 1400);
-    } catch (_) {
-      btn.textContent = "Повторить";
-    }
+    const name = document.getElementById("brName").value.trim();
+    const contact = document.getElementById("brContact").value.trim();
+    const niche = document.getElementById("brNiche").value.trim();
+    const msg = `Привет! Хочу обсудить разработку сайта.\nИмя: ${name}\nКонтакт: ${contact}\nНиша / задача: ${niche}`;
+    const deepLink = `${STUDIO_TG_URL}?text=${encodeURIComponent(msg)}`;
+
+    window.open(deepLink, "_blank", "noopener");
+
+    briefBtn.textContent = "Чат Telegram открыт ✓";
+    briefNote.style.color = "var(--text)";
+    briefNote.replaceChildren();
+    const statusLine = document.createElement("div");
+    statusLine.textContent = "Заявка сформирована! Если окно не открылось автоматически:";
+    const linkEl = document.createElement("a");
+    linkEl.href = deepLink;
+    linkEl.target = "_blank";
+    linkEl.rel = "noopener";
+    linkEl.textContent = "Открыть чат в Telegram (@iamhaveyou) →";
+    linkEl.style.cssText = "display:inline-block;margin-top:8px;padding:8px 14px;border-radius:9999px;background:rgba(200,255,0,0.14);border:1px solid rgba(200,255,0,0.45);color:#C8FF00;font-weight:700;text-decoration:none;";
+    briefNote.append(statusLine, linkEl);
   });
 </script>
 </body>

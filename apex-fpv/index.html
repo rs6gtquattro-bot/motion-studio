@@ -284,12 +284,17 @@
     overflow: hidden;
     cursor: none;
     background: #0D0E11;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
   .lens-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    pointer-events: none;
     transition: opacity 0.35s ease;
   }
   .glass-lens {
@@ -303,12 +308,35 @@
     pointer-events: none;
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.8);
-    transition: opacity 0.2s ease, transform 0.28s var(--ease-spring);
+    transition: opacity 0.18s ease, transform 0.24s var(--ease-spring);
+    z-index: 4;
   }
+  .glass-lens.active,
   .lens-frame:hover .glass-lens { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .lens-touch-hint {
+    display: none;
+    position: absolute;
+    left: 12px; top: 12px;
+    z-index: 3;
+    padding: 6px 11px;
+    border-radius: 9999px;
+    background: rgba(13, 14, 17, 0.86);
+    color: var(--acid);
+    border: 1px solid rgba(200, 255, 0, 0.5);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .lens-touch-hint.hidden { opacity: 0; }
+  @media (hover: none), (pointer: coarse), (max-width: 960px) {
+    .lens-touch-hint { display: inline-flex; align-items: center; gap: 6px; }
+  }
   .lens-badge {
     position: absolute;
     left: 16px; bottom: 16px;
+    z-index: 3;
     padding: 8px 14px;
     border-radius: 10px;
     background: rgba(13, 14, 17, 0.86);
@@ -316,6 +344,7 @@
     font-family: var(--font-mono);
     font-size: 11.5px;
     border: 1px solid rgba(200, 255, 0, 0.45);
+    pointer-events: none;
   }
 
   /* STAT CARDS */
@@ -422,11 +451,45 @@
 
   @media (max-width: 960px) {
     .lens-showcase, .expand-grid { grid-template-columns: 1fr; }
-    .lens-frame { height: 300px; cursor: default; }
-    .glass-lens { display: none; }
-    header.nav { padding: 12px 16px; }
-    .hero, .wrap { padding: 48px 16px; }
-    .goo-btn, .goo-pill { width: 104px; font-size: 11px; }
+    .lens-frame { height: 280px; cursor: crosshair; }
+    .glass-lens { width: 136px; height: 136px; }
+    header.nav { padding: 10px 14px; gap: 8px; }
+    .nav-l { gap: 8px; min-width: 0; }
+    .back-chip { padding: 5px 10px; font-size: 10.5px; white-space: nowrap; }
+    .brand { font-size: 14px; white-space: nowrap; }
+    .cta-brutal { padding: 8px 12px; font-size: 10.5px; white-space: nowrap; }
+    .hero { min-height: auto; padding: 34px 14px 36px; }
+    .hud-strip { gap: 6px; margin-bottom: 16px; }
+    .hud-pill { font-size: 10px; padding: 4px 9px; box-shadow: 2px 2px 0 var(--ink); }
+    h1.acid-title { font-size: clamp(27px, 8.2vw, 40px); margin-bottom: 16px; }
+    .hero-foot { gap: 16px; }
+    .hero-desc { font-size: 14px; line-height: 1.48; padding: 12px 14px; }
+    .mag-acid { height: 48px; padding: 0 22px; font-size: 14px; box-shadow: 4px 4px 0 var(--ink); }
+    .marquee-band { padding: 11px 0; }
+    .marquee-row { font-size: 14px; gap: 18px; }
+    .wrap { padding: 36px 14px; }
+    .sec-top { margin-bottom: 18px; gap: 14px; }
+    .sec-h { font-size: clamp(21px, 6.2vw, 28px); }
+    .goo-stage { padding: 6px; max-width: 100%; }
+    .goo-blobs { inset: 6px; }
+    .goo-btn, .goo-pill { width: 98px; height: 36px; font-size: 10.5px; }
+    .goo-trail { width: 68px; }
+    .lens-showcase { gap: 16px; }
+    .lens-frame { height: 245px; border-radius: 16px; box-shadow: 5px 5px 0 var(--ink); }
+    .lens-badge { left: 10px; right: 10px; bottom: 10px; padding: 6px 10px; font-size: 10px; }
+    .stats-col { gap: 10px; }
+    .stat-card { padding: 14px 16px; border-radius: 14px; box-shadow: 4px 4px 0 var(--ink); }
+    .stat-num { font-size: 26px; }
+    .stat-lbl { font-size: 12px; }
+    .expand-grid { gap: 12px; }
+    .exp-card { padding: 16px; border-radius: 16px; box-shadow: 4px 4px 0 var(--ink); }
+    .exp-card h3 { font-size: 16.5px; }
+    .exp-short { font-size: 13px; }
+    footer.foot { padding: 20px 14px; font-size: 10.5px; }
+  }
+  @media (max-width: 430px) {
+    .brand-tag { display: none; }
+    .goo-btn, .goo-pill { width: 92px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -509,7 +572,8 @@
 
   <div class="lens-showcase">
     <div class="lens-frame" id="lensFrame">
-      <img id="lensImg" src="../assets/apex-drift.jpg" alt="Кадр съёмки с кино-FPV дрона">
+      <img id="lensImg" src="../assets/apex-drift.jpg" decoding="async" alt="Кадр съёмки с кино-FPV дрона">
+      <div class="lens-touch-hint" id="lensHint">Водите пальцем по фото — лупа 2.2&times;</div>
       <div class="glass-lens" id="glassLens"></div>
       <div class="lens-badge" id="lensBadge">DRIFT CHASE // 185 KM/H · MOSCOW RACEWAY</div>
     </div>
@@ -595,11 +659,11 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
-  const TELEGRAM_CONFIG = { BOT_TOKEN: "", CHAT_ID: "" };
+  const STUDIO_TG_URL = "https://t.me/iamhaveyou";
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  if (!prefersReduced && window.Lenis) {
-    const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+  if (!prefersReduced && window.Lenis && window.innerWidth > 960 && window.matchMedia("(pointer: fine)").matches) {
+    const lenis = new Lenis({ duration: 0.95, smoothWheel: true });
     lenis.on("scroll", () => { if (window.ScrollTrigger) ScrollTrigger.update(); });
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -622,11 +686,14 @@
 
   const drone = { x: cv.width * 0.72, y: cv.height * 0.36, vx: 0, vy: 0, tx: cv.width * 0.72, ty: cv.height * 0.36 };
   const trail = [];
-  document.querySelector(".hero").addEventListener("pointermove", (e) => {
+  const heroSec = document.querySelector(".hero");
+  const setDroneTarget = (e) => {
     const r = cv.getBoundingClientRect();
     drone.tx = e.clientX - r.left;
     drone.ty = e.clientY - r.top;
-  });
+  };
+  heroSec.addEventListener("pointermove", setDroneTarget, { passive: true });
+  heroSec.addEventListener("pointerdown", setDroneTarget, { passive: true });
 
   let tick = 0;
   function renderFpv() {
@@ -714,7 +781,7 @@
     document.querySelectorAll(".stat-num").forEach((el) => { el.textContent = el.dataset.count + (el.dataset.suffix || ""); });
   }
 
-  // --- Goo Morph Mode Switcher + Glass Lens (DesignBookmark Motion) ---
+  // --- Goo Morph Mode Switcher + Touch/Mouse Glass Lens (DesignBookmark Motion) ---
   const gooPill = document.getElementById("gooPill");
   const gooTrail = document.getElementById("gooTrail");
   const gooBtns = [...document.querySelectorAll(".goo-btn")];
@@ -722,45 +789,139 @@
   const lensFrame = document.getElementById("lensFrame");
   const glassLens = document.getElementById("glassLens");
   const lensBadge = document.getElementById("lensBadge");
+  const lensHint = document.getElementById("lensHint");
+
+  function syncGooPill(activeBtn) {
+    const pad = parseFloat(getComputedStyle(activeBtn.parentElement).paddingLeft) || 8;
+    const x = activeBtn.offsetLeft - pad;
+    gooPill.style.width = `${activeBtn.offsetWidth}px`;
+    gooPill.style.transform = `translateX(${x}px)`;
+    gooTrail.style.transform = `translateX(${x + Math.round(activeBtn.offsetWidth * 0.14)}px)`;
+  }
 
   function syncLensBg() {
     glassLens.style.backgroundImage = `url('${lensImg.getAttribute("src")}')`;
   }
   syncLensBg();
+  syncGooPill(gooBtns[0]);
+  window.addEventListener("resize", () => {
+    const active = gooBtns.find((b) => b.classList.contains("active")) || gooBtns[0];
+    syncGooPill(active);
+  }, { passive: true });
+
+  let lastLensPt = { fx: 0.52, fy: 0.58, touch: false };
+
+  function updateGlassLens(clientX, clientY, isTouch) {
+    const r = lensFrame.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const x = Math.max(0, Math.min(r.width, clientX - r.left));
+    const y = Math.max(0, Math.min(r.height, clientY - r.top));
+    lastLensPt = { fx: x / r.width, fy: y / r.height, touch: isTouch };
+
+    const zoom = 2.2;
+    const lensW = glassLens.offsetWidth || (window.innerWidth <= 960 ? 136 : 170);
+    const half = lensW * 0.5;
+
+    // Exact object-fit: cover mapping so zoomed image aligns pixel-for-pixel at any aspect ratio
+    const natW = lensImg.naturalWidth || 1600;
+    const natH = lensImg.naturalHeight || 900;
+    const coverScale = Math.max(r.width / natW, r.height / natH);
+    const drawW = natW * coverScale;
+    const drawH = natH * coverScale;
+    const offX = (r.width - drawW) * 0.5;
+    const offY = (r.height - drawH) * 0.5;
+
+    // On touch screens, lift lens center 55px above finger so thumb never obscures magnified area
+    const lx = Math.max(half * 0.65, Math.min(r.width - half * 0.65, x));
+    const ly = isTouch ? Math.max(half + 6, y - 55) : y;
+
+    glassLens.style.left = `${lx.toFixed(1)}px`;
+    glassLens.style.top = `${ly.toFixed(1)}px`;
+    glassLens.style.backgroundSize = `${(drawW * zoom).toFixed(1)}px ${(drawH * zoom).toFixed(1)}px`;
+    glassLens.style.backgroundPosition = `${((offX - x) * zoom + half).toFixed(1)}px ${((offY - y) * zoom + half).toFixed(1)}px`;
+    glassLens.classList.add("active");
+    if (isTouch && lensHint) lensHint.classList.add("hidden");
+  }
 
   gooBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       gooBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-      const x = btn.offsetLeft - 8;
-      gooPill.style.transform = `translateX(${x}px)`;
-      gooTrail.style.transform = `translateX(${x + 18}px)`;
+      syncGooPill(btn);
       lensImg.src = btn.dataset.img;
       lensBadge.textContent = btn.dataset.cap;
       syncLensBg();
+      if (glassLens.classList.contains("active")) {
+        const r = lensFrame.getBoundingClientRect();
+        updateGlassLens(r.left + r.width * lastLensPt.fx, r.top + r.height * lastLensPt.fy, lastLensPt.touch);
+      }
     });
   });
 
+  // Mouse support
   lensFrame.addEventListener("mousemove", (e) => {
-    const r = lensFrame.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    const zoom = 2.15;
-    glassLens.style.left = `${x}px`;
-    glassLens.style.top = `${y}px`;
-    glassLens.style.backgroundSize = `${r.width * zoom}px ${r.height * zoom}px`;
-    glassLens.style.backgroundPosition = `${-x * zoom + 85}px ${-y * zoom + 85}px`;
+    updateGlassLens(e.clientX, e.clientY, false);
   });
+  lensFrame.addEventListener("mouseleave", () => {
+    glassLens.classList.remove("active");
+  });
+
+  // Full Touch + Pointer support for phones & tablets
+  let lensTouching = false;
+  lensFrame.addEventListener("touchstart", (e) => {
+    if (!e.touches.length) return;
+    e.preventDefault();
+    lensTouching = true;
+    const t = e.touches[0];
+    updateGlassLens(t.clientX, t.clientY, true);
+  }, { passive: false });
+
+  lensFrame.addEventListener("touchmove", (e) => {
+    if (!lensTouching || !e.touches.length) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    updateGlassLens(t.clientX, t.clientY, true);
+  }, { passive: false });
+
+  lensFrame.addEventListener("touchend", () => {
+    lensTouching = false;
+    // Keep lens anchored at last inspected point so mobile user sees magnified frame clearly
+  }, { passive: true });
+
+  lensFrame.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse") return;
+    e.preventDefault();
+    lensTouching = true;
+    try { lensFrame.setPointerCapture(e.pointerId); } catch (_) {}
+    updateGlassLens(e.clientX, e.clientY, true);
+  });
+  lensFrame.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "mouse" || !lensTouching) return;
+    updateGlassLens(e.clientX, e.clientY, true);
+  });
+  lensFrame.addEventListener("pointerup", (e) => {
+    if (e.pointerType !== "mouse") lensTouching = false;
+  });
+  lensFrame.addEventListener("pointercancel", () => { lensTouching = false; });
 
   // --- Expand Cards (DesignBookmark Motion) ---
   document.querySelectorAll(".exp-card").forEach((c) => {
     c.addEventListener("click", () => c.classList.toggle("open"));
   });
 
-  // --- Modal + Light-Dismiss + Telegram ---
+  // --- Modal + Light-Dismiss ---
   const shootModal = document.getElementById("shootModal");
-  document.getElementById("openShootBtn").addEventListener("click", () => shootModal.showModal());
-  document.getElementById("heroBookBtn").addEventListener("click", () => shootModal.showModal());
+  const shootSubmitBtn = document.getElementById("shootSubmit");
+  const shootNote = document.getElementById("shootNote");
+  function openShootModal() {
+    shootSubmitBtn.classList.remove("ok");
+    shootSubmitBtn.textContent = "ОТПРАВИТЬ БРИФ В TELEGRAM";
+    shootNote.style.color = "";
+    shootNote.textContent = "Расчёт сметы и подбор дрона за 15 минут";
+    shootModal.showModal();
+  }
+  document.getElementById("openShootBtn").addEventListener("click", openShootModal);
+  document.getElementById("heroBookBtn").addEventListener("click", openShootModal);
   document.getElementById("closeShootBtn").addEventListener("click", () => shootModal.close());
   if (!("closedBy" in HTMLDialogElement.prototype)) {
     shootModal.addEventListener("click", (e) => {
@@ -771,27 +932,22 @@
   }
   document.getElementById("shootForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const btn = document.getElementById("shootSubmit");
-    const note = document.getElementById("shootNote");
-    btn.textContent = "ОТПРАВКА...";
-    const text = `APEX // FPV — Запрос вылета\nПродюсер: ${document.getElementById("sName").value}\nКонтакт: ${document.getElementById("sContact").value}\nЗадача: ${document.getElementById("sTask").value}`;
-    try {
-      if (TELEGRAM_CONFIG.BOT_TOKEN && TELEGRAM_CONFIG.CHAT_ID) {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.CHAT_ID, text })
-        });
-        note.textContent = "Бриф улетел в Telegram!";
-      } else {
-        await new Promise((r) => setTimeout(r, 600));
-        note.textContent = "Демо-режим: впишите BOT_TOKEN и CHAT_ID вверху скрипта.";
-      }
-      btn.classList.add("ok");
-      btn.textContent = "БРИФ ПРИНЯТ!";
-      setTimeout(() => { shootModal.close(); btn.classList.remove("ok"); btn.textContent = "ОТПРАВИТЬ БРИФ В TELEGRAM"; }, 1400);
-    } catch (_) {
-      btn.textContent = "ПОВТОРИТЬ";
-    }
+    shootSubmitBtn.textContent = "ОТПРАВКА БРИФА...";
+    await new Promise((r) => setTimeout(r, 450));
+
+    shootSubmitBtn.classList.add("ok");
+    shootSubmitBtn.textContent = "РАСЧЁТ ВЫЛЕТА ОТПРАВЛЕН ✓";
+    shootNote.style.color = "#0A0A0D";
+    shootNote.replaceChildren();
+    const info = document.createElement("div");
+    info.textContent = "Бриф на съёмку принят — на вашем реальном сайте расчёт вылета мгновенно улетает вам в Telegram.";
+    const cta = document.createElement("a");
+    cta.href = `${STUDIO_TG_URL}?text=${encodeURIComponent("Привет! Понравилось демо APEX // FPV, хочу обсудить похожий сайт")}`;
+    cta.target = "_blank";
+    cta.rel = "noopener";
+    cta.textContent = "Хочу такой сайт → @iamhaveyou";
+    cta.style.cssText = "display:inline-block;margin-top:10px;padding:8px 14px;border-radius:9999px;background:#0A0A0D;color:#C8FF00;font-weight:800;text-decoration:none;";
+    shootNote.append(info, cta);
   });
 </script>
 </body>

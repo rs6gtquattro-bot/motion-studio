@@ -256,7 +256,6 @@
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     background: linear-gradient(180deg, #130F0C 0%, #0E0B09 100%);
-    contain: layout paint;
   }
   .horiz-head {
     max-width: 1260px;
@@ -275,7 +274,8 @@
   .horiz-track {
     display: flex;
     gap: 28px;
-    padding: 0 36px;
+    padding-left: max(36px, calc((100% - 1188px) / 2));
+    padding-right: max(36px, calc((100% - 1188px) / 2));
     width: max-content;
     will-change: transform;
   }
@@ -295,15 +295,6 @@
     height: 300px;
     overflow: hidden;
   }
-  .drink-media--citrus::after,
-  .drink-media--noir::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  .drink-media--citrus::after { background: linear-gradient(150deg, rgba(212,168,95,0.22), rgba(20,14,9,0.24)); }
-  .drink-media--noir::after { background: linear-gradient(160deg, rgba(14,11,9,0.34), rgba(107,31,42,0.20)); }
   .drink-media img {
     width: 100%;
     height: 100%;
@@ -495,17 +486,67 @@
     color: var(--muted);
   }
 
+  .horiz-hint-mobile { display: none; }
+
   @media (max-width: 960px) {
     .hero-inner, .pass-section { grid-template-columns: 1fr; }
     nav.ed-nav { display: none; }
-    .hero { padding: 120px 20px 56px; }
-    .manifesto-sec, .pass-section { padding: 72px 20px; }
-    .horiz-head { padding: 0 20px; flex-direction: column; align-items: flex-start; }
-    .horiz-track { padding: 0 20px; overflow-x: auto; width: 100%; }
-    .drink-card { width: 300px; }
-    header.topbar { padding: 16px 18px; }
-    .fan-stage:hover .fan-card:nth-child(1) { transform: rotate(-12deg) translateX(-44px); }
-    .fan-stage:hover .fan-card:nth-child(3) { transform: rotate(12deg) translateX(44px); }
+    .horiz-hint-desktop { display: none; }
+    .horiz-hint-mobile { display: inline; }
+    header.topbar { padding: 11px 12px; gap: 6px; }
+    .top-left { gap: 8px; min-width: 0; }
+    .back-pill { padding: 5px 8px; font-size: 9.5px; white-space: nowrap; }
+    .logo-serif { font-size: 15.5px; letter-spacing: 0.04em; white-space: nowrap; }
+    .reserve-btn { padding: 6px 10px; font-size: 9.5px; letter-spacing: 0.03em; white-space: nowrap; }
+    .hero { min-height: auto; padding: 86px 16px 34px; }
+    .hero-inner { gap: 20px; }
+    .ed-kicker { font-size: 10px; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .hero-display { font-size: clamp(34px, 9.6vw, 50px); line-height: 1.02; margin-bottom: 14px; }
+    .weight-wave-line { font-size: 15.5px; margin-bottom: 12px; }
+    .word-roll-badge { font-size: 10.5px; gap: 6px; flex-wrap: wrap; }
+    .hero-right-note { padding: 16px; border-radius: 14px; }
+    .hero-right-note p { font-size: 13px; line-height: 1.5; margin-bottom: 12px; }
+    .copy-pass-row { padding: 8px 10px 8px 12px; gap: 8px; }
+    .copy-pass-code { font-size: 11.5px; letter-spacing: 0.08em; }
+    .manifesto-sec { padding: 44px 16px; }
+    .read-along { font-size: clamp(23px, 6.2vw, 32px); line-height: 1.28; }
+    .horiz-section { padding: 38px 0 44px; }
+    .horiz-head { padding: 0 16px; margin-bottom: 18px; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .horiz-head h2 { font-size: clamp(26px, 7.2vw, 34px); }
+    .horiz-track {
+      padding: 0 16px 8px;
+      gap: 14px;
+      overflow-x: auto;
+      width: 100%;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: 16px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .horiz-track::-webkit-scrollbar { display: none; }
+    .drink-card { width: min(292px, calc(100vw - 44px)); border-radius: 18px; scroll-snap-align: start; }
+    .drink-media { height: 204px; }
+    .drink-body { padding: 15px 16px 18px; }
+    .drink-body h3 { font-size: 22px; }
+    .drink-body p { font-size: 12.5px; line-height: 1.5; }
+    .pass-section { padding: 42px 16px; gap: 26px; }
+    .fan-stage { height: 244px; margin-top: 14px; overflow: hidden; }
+    .fan-card { width: 174px; height: 214px; padding: 14px; border-radius: 16px; }
+    .fan-card h4 { font-size: 19px; margin-bottom: 4px; }
+    .fan-card p { font-size: 11px; line-height: 1.4; }
+    .fan-card:nth-child(1) { transform: rotate(-9deg) translateX(-56px) translateY(8px); }
+    .fan-card:nth-child(2) { transform: rotate(0deg) translateY(-4px); }
+    .fan-card:nth-child(3) { transform: rotate(9deg) translateX(56px) translateY(8px); }
+    .fan-stage:hover .fan-card:nth-child(1) { transform: rotate(-12deg) translateX(-72px) translateY(10px); }
+    .fan-stage:hover .fan-card:nth-child(3) { transform: rotate(12deg) translateX(72px) translateY(10px); }
+    .parallax-ticket { padding: 20px; border-radius: 18px; }
+    .ticket-top { padding-bottom: 12px; margin-bottom: 14px; }
+    .ticket-brand { font-size: 20px; }
+    .ticket-guest-name { font-size: 24px; margin: 4px 0 12px; }
+    .ticket-meta-grid { gap: 8px; margin-bottom: 16px; font-size: 10px; }
+    .ticket-input-row { flex-direction: column; gap: 8px; }
+    .ticket-input-row input, .ticket-btn { width: 100%; height: 42px; }
+    footer.ed-foot { padding: 20px 16px 28px; font-size: 10.5px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -578,7 +619,10 @@
       <div class="ed-kicker">02 // СЕЗОННАЯ КОЛЛЕКЦИЯ</div>
       <h2>Четыре акта ночной карты</h2>
     </div>
-    <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">ПРОКРУЧИВАЙТЕ ВНИЗ &rarr; ГАЛЕРЕЯ ДВИЖЕТСЯ ГОРИЗОНТАЛЬНО</div>
+    <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--muted)">
+      <span class="horiz-hint-desktop">ПРОКРУЧИВАЙТЕ ВНИЗ &rarr; ГАЛЕРЕЯ ДВИЖЕТСЯ ГОРИЗОНТАЛЬНО</span>
+      <span class="horiz-hint-mobile">СВАЙПАЙТЕ КАРТОЧКИ ВЛЕВО &rarr;</span>
+    </div>
   </div>
 
   <div class="horiz-track" id="horizTrack">
@@ -605,8 +649,8 @@
     </article>
 
     <article class="drink-card">
-      <div class="drink-media drink-media--citrus">
-        <img src="../assets/solis-glass.jpg" loading="lazy" decoding="async" alt="Акт III — Golden Yuzu">
+      <div class="drink-media">
+        <img src="../assets/solis-yuzu.jpg" loading="lazy" decoding="async" alt="Акт III — Velvet Yuzu">
         <span class="drink-num">ACT 03 // CITRUS</span>
       </div>
       <div class="drink-body">
@@ -616,8 +660,8 @@
     </article>
 
     <article class="drink-card">
-      <div class="drink-media drink-media--noir">
-        <img src="../assets/solis-hero.jpg" loading="lazy" decoding="async" alt="Акт IV — Noir Truffle">
+      <div class="drink-media">
+        <img src="../assets/solis-noir.jpg" loading="lazy" decoding="async" alt="Акт IV — Noir Espresso">
         <span class="drink-num">ACT 04 // NOIR</span>
       </div>
       <div class="drink-body">
@@ -712,11 +756,11 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 <script>
-  const TELEGRAM_CONFIG = { BOT_TOKEN: "", CHAT_ID: "" };
+  const STUDIO_TG_URL = "https://t.me/iamhaveyou";
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // --- Lenis Smooth Scroll + Unified GSAP Ticker (single loop, zero double-rAF) ---
-  if (!prefersReduced && window.Lenis && window.gsap) {
+  // --- Lenis Smooth Scroll (desktop fine-pointer only; mobile uses native 120fps touch scroll) ---
+  if (!prefersReduced && window.Lenis && window.gsap && window.innerWidth > 960 && window.matchMedia("(pointer: fine)").matches) {
     const lenis = new Lenis({ duration: 0.95, smoothWheel: true, wheelMultiplier: 1.0 });
     if (window.ScrollTrigger) {
       gsap.registerPlugin(ScrollTrigger);
@@ -849,10 +893,11 @@
       }
     });
 
-    // Desktop Horizontal Pinned Scroll Gallery (scrub: true avoids double-lag with Lenis)
+    // Desktop Horizontal Pinned Scroll Gallery (aligned to exact .horiz-head container grid)
     if (window.innerWidth > 960) {
+      const horizSec = document.querySelector(".horiz-section");
       const track = document.getElementById("horizTrack");
-      const getDist = () => Math.max(0, track.scrollWidth - window.innerWidth + 72);
+      const getDist = () => Math.max(0, track.scrollWidth - horizSec.clientWidth);
       gsap.to(track, {
         x: () => -getDist(),
         ease: "none",
@@ -922,10 +967,15 @@
     }, { passive: true });
   }
 
-  // --- Modal Dialog + Light-Dismiss Fallback + Telegram Bot API ---
+  // --- Modal Dialog + Light-Dismiss Fallback ---
   const bookModal = document.getElementById("bookModal");
+  const bookSubmitBtn = document.getElementById("bookSubmit");
+  const bookNote = document.getElementById("bookNote");
   const openBook = () => {
     if (guestInput.value.trim()) document.getElementById("bName").value = guestInput.value.trim();
+    bookSubmitBtn.textContent = "Подтвердить пропуск в Telegram";
+    bookNote.style.color = "var(--muted)";
+    bookNote.textContent = "Код входа придёт в личные сообщения";
     bookModal.showModal();
   };
   document.getElementById("openBookBtn").addEventListener("click", openBook);
@@ -941,26 +991,23 @@
 
   document.getElementById("bookForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const btn = document.getElementById("bookSubmit");
-    const note = document.getElementById("bookNote");
-    btn.textContent = "Оформляем пропуск...";
-    const text = `SOLIS // NOCTURNE — Бронь\nГость: ${document.getElementById("bName").value}\nКонтакт: ${document.getElementById("bContact").value}\nСет: ${ticketSet.textContent}\nВремя: ${document.getElementById("bTime").value}`;
-    try {
-      if (TELEGRAM_CONFIG.BOT_TOKEN && TELEGRAM_CONFIG.CHAT_ID) {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.CHAT_ID, text })
-        });
-        note.textContent = "Пропуск отправлен в Telegram!";
-      } else {
-        await new Promise((r) => setTimeout(r, 600));
-        note.textContent = "Демо-режим: укажите BOT_TOKEN и CHAT_ID вверху скрипта.";
-      }
-      btn.textContent = "Пропуск подтверждён";
-      setTimeout(() => { bookModal.close(); btn.textContent = "Подтвердить пропуск в Telegram"; }, 1400);
-    } catch (_) {
-      btn.textContent = "Повторить отправку";
-    }
+    const guest = document.getElementById("bName").value.trim() || "Гость Ночи";
+    const visitTime = document.getElementById("bTime").value;
+    bookSubmitBtn.textContent = "Оформляем пропуск...";
+    await new Promise((r) => setTimeout(r, 450));
+
+    bookSubmitBtn.textContent = "Запрос на стол принят ✓";
+    bookNote.style.color = "var(--ivory)";
+    bookNote.replaceChildren();
+    const info = document.createElement("div");
+    info.textContent = `Пропуск для «${guest}» (${visitTime}) оформлен — на вашем реальном сайте такая бронь мгновенно улетает в Telegram.`;
+    const cta = document.createElement("a");
+    cta.href = `${STUDIO_TG_URL}?text=${encodeURIComponent("Привет! Понравилось демо SOLIS // NOCTURNE, хочу обсудить похожий сайт")}`;
+    cta.target = "_blank";
+    cta.rel = "noopener";
+    cta.textContent = "Хочу такой сайт → @iamhaveyou";
+    cta.style.cssText = "display:inline-block;margin-top:10px;padding:7px 14px;border-radius:9999px;background:rgba(212,168,95,0.16);border:1px solid rgba(212,168,95,0.55);color:#D4A85F;font-weight:700;text-decoration:none;";
+    bookNote.append(info, cta);
   });
 </script>
 </body>
