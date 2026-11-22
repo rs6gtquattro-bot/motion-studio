@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Разработка продающих сайтов с моушн-дизайном за 24–48 часов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Manrope:wght@200..800&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07070A;
+    --surface: #111116;
+    --surface-2: #191922;
+    --border: rgba(255, 255, 255, 0.10);
+    --border-hi: rgba(255, 255, 255, 0.24);
+    --text: #F6F6F9;
+    --muted: #9395A4;
+    --accent: #C8FF00;
+    --orange: #FF4D00;
+    --brass: #D4A85F;
+    --font-display: "Unbounded", "Manrope", sans-serif;
+    --font-sans: "Manrope", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --ease-spring: cubic-bezier(0.22, 1.32, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); color: var(--text); font-family: var(--font-sans); }
+  body {
+    background:
+      radial-gradient(ellipse 900px 480px at 50% -8%, rgba(200, 255, 0, 0.08), transparent 68%),
+      radial-gradient(ellipse 680px 440px at 88% 45%, rgba(255, 77, 0, 0.07), transparent 70%),
+      var(--bg);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 112px;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* Custom Blend-Mode Cursor (desktop pointer only) */
+  .blend-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    transition: width 0.28s var(--ease-spring), height 0.28s var(--ease-spring), opacity 0.2s ease;
+    opacity: 0;
+  }
+  .blend-cursor.active { width: 54px; height: 54px; }
+  @media (pointer: coarse) { .blend-cursor { display: none; } }
+
+  /* ================= TOP HEADER ================= */
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    padding: 16px 32px;
+    background: rgba(7, 7, 10, 0.78);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .top-actions { display: flex; align-items: center; gap: 10px; }
+  .cmd-trigger {
+    height: 36px;
+    padding: 0 13px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .cmd-trigger:hover { color: var(--text); border-color: var(--border-hi); }
+  .kbd {
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.07);
+    font-size: 10px;
+    color: var(--text);
+  }
+  .tg-top-btn {
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    background: var(--accent);
+    color: #07070A;
+    font-size: 12.5px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: transform 0.25s var(--ease-spring);
+  }
+  .tg-top-btn:hover { transform: scale(1.04); }
+
+  /* ================= HERO ================= */
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px; }
+  .hero { padding: 84px 0 64px; }
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .hero-kicker b { color: var(--accent); }
+
+  h1.hero-h {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 5vw, 64px);
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    max-width: 1050px;
+    margin-bottom: 22px;
+  }
+  .roll-slot {
+    display: block;
+    margin-top: 0.06em;
+    height: 1.24em;
+    line-height: 1.24em;
+    overflow: hidden;
+    color: var(--accent);
+  }
+  .roll-list {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.6s var(--ease-spring);
+    will-change: transform;
+  }
+  .roll-list span {
+    display: block;
+    height: 1.24em;
+    line-height: 1.24em;
+    white-space: nowrap;
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    line-height: 1.62;
+    color: var(--muted);
+    max-width: 660px;
+    margin-bottom: 32px;
+  }
+
+  .hero-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .mag-cta {
+    height: 54px;
+    padding: 0 26px;
+    border-radius: 9999px;
+    background: var(--text);
+    color: #07070A;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.25s var(--ease-spring), background 0.2s ease;
+  }
+  .mag-cta:hover { background: var(--accent); }
+  .copy-tg {
+    height: 54px;
+    padding: 0 22px;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.25s var(--ease-spring);
+  }
+  .copy-tg.copied { border-color: var(--accent); color: var(--accent); }
+
+  /* ================= 3 SHOWCASE DEMO CARDS ================= */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin: 24px 0 76px;
+  }
+  .proj-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s var(--ease-spring), border-color 0.25s ease, box-shadow 0.35s ease;
+    transform-style: preserve-3d;
+  }
+  .proj-card:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65);
+  }
+  .proj-preview {
+    position: relative;
+    height: 232px;
+    overflow: hidden;
+    background: #0B0B10;
+    border-bottom: 1px solid var(--border);
+  }
+  .proj-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease-spring);
+  }
+  .proj-card:hover .proj-preview img { transform: scale(1.07); }
+
+  /* Live mini-oscilloscope preview for KURO // LAB card */
+  .kuro-mini-bg {
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 75% 28%, rgba(255, 77, 0, 0.34), transparent 55%),
+      linear-gradient(155deg, #16161D 0%, #07070A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  #miniScope { width: 100%; height: 100%; display: block; }
+
+  .proj-badge {
+    position: absolute;
+    top: 14px; left: 14px;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    background: rgba(7, 7, 10, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+  .proj-body {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+  }
+  .proj-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .proj-desc { font-size: 13.8px; line-height: 1.58; color: var(--muted); }
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .m-tag {
+    padding: 4px 9px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: #C2C4D1;
+  }
+  .open-demo {
+    height: 46px;
+    width: 100%;
+    border-radius: 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-hi);
+    font-size: 13.5px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s var(--ease-spring);
+  }
+  .proj-card[data-accent="orange"]:hover .open-demo { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .proj-card[data-accent="brass"]:hover .open-demo  { background: var(--brass); border-color: var(--brass); color: #120D08; }
+  .proj-card[data-accent="acid"]:hover .open-demo   { background: var(--accent); border-color: var(--accent); color: #07070A; }
+
+  /* ================= TERMS / COMMERCIAL OFFER ================= */
+  .terms-panel {
+    background: linear-gradient(155deg, #13131A 0%, #0C0C10 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+    padding: 38px;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 36px;
+    align-items: center;
+  }
+  .terms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  .term-box {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+  }
+  .term-box strong { display: block; font-family: var(--font-display); font-size: 17px; color: var(--accent); margin-bottom: 5px; }
+  .term-box span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+  .offer-cta-box {
+    background: #09090D;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .offer-cta-box h3 { font-family: var(--font-display); font-size: 20px; }
+  .offer-cta-box p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+  .btn-acid-full {
+    height: 50px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #07070A;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* ================= RUBBER DOCK (DesignBookmark Motion) ================= */
+  .dock-wrap {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+  }
+  .rubber-dock {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 22px;
+    background: rgba(16, 16, 22, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.72);
+  }
+  .dock-item {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text);
+    transform-origin: bottom center;
+    transition: transform 0.22s var(--ease-spring), background 0.2s ease;
+    white-space: nowrap;
+  }
+  .dock-item:hover { background: rgba(255, 255, 255, 0.12); }
+
+  /* ================= COMMAND PALETTE & BRIEF MODAL (<dialog closedby="any">) ================= */
+  dialog.pal, dialog.brief {
+    margin: auto;
+    width: min(500px, calc(100vw - 24px));
+    padding: 20px;
+    border-radius: 22px;
+    background: #121218;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--text);
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.86);
+  }
+  dialog::backdrop { background: rgba(4, 4, 8, 0.76); backdrop-filter: blur(8px); }
+  .pal-input {
+    width: 100%; height: 46px; padding: 0 14px; border-radius: 12px;
+    background: #09090D; border: 1px solid var(--border); color: var(--text);
+    font-family: var(--font-mono); font-size: 13px; outline: none; margin-bottom: 12px;
+  }
+  .pal-list { display: flex; flex-direction: column; gap: 6px; }
+  .pal-row {
+    padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent; display: flex; justify-content: space-between; align-items: center;
+    font-size: 13.5px; font-weight: 600; text-align: left; width: 100%;
+  }
+  .pal-row:hover { background: rgba(200, 255, 0, 0.10); border-color: rgba(200, 255, 0, 0.4); color: var(--accent); }
+  .pal-row small { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+  .b-field { margin-bottom: 12px; }
+  .b-field label { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .b-field input {
+    width: 100%; height: 44px; padding: 0 13px; border-radius: 11px;
+    background: #09090D; border: 1px solid var(--border); color: var(--text); font-size: 14px; outline: none;
+  }
+
+  @media (max-width: 1020px) {
+    .projects-grid, .terms-panel { grid-template-columns: 1fr; }
+    .cmd-trigger { display: none; }
+  }
+  @media (max-width: 640px) {
+    header.top { padding: 14px 16px; }
+    .tg-top-btn { white-space: nowrap; font-size: 12px; padding: 0 14px; }
+    .wrap { padding: 0 16px; }
+    .hero { padding: 54px 0 40px; }
+    .terms-panel { padding: 22px; }
+    .terms-grid { grid-template-columns: 1fr; }
+    .rubber-dock { gap: 5px; padding: 6px 8px; }
+    .dock-item { padding: 0 10px; font-size: 10.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blend-cursor" id="blendCursor"></div>
+
+<header class="top">
+  <div class="brand-pill">
+    <span class="live-dot"></span>
+    <span>MOTION WEB STUDIO</span>
+  </div>
+  <div class="top-actions">
+    <button class="cmd-trigger" id="openCmdBtn" type="button">
+      <span>Быстрый переход</span>
+      <span class="kbd">Ctrl+K</span>
+    </button>
+    <a class="tg-top-btn" id="topTgLink" href="https://t.me/iamhaveyou" target="_blank" rel="noopener">
+      <span>Написать в Telegram</span>
+    </a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="hero-kicker">
+      <b>DESIGNBOOKMARK MOTION STACK</b>
+      <span>· 3 НЕСТАНДАРТНЫХ ДЕМО-ПРОЕКТА · ПОД КЛЮЧ ЗА 24–48 Ч</span>
+    </div>
+    <h1 class="hero-h">
+      Разработка сайтов, которые выглядят как
+      <span class="roll-slot">
+        <span class="roll-list" id="heroRoll">
+          <span>студия за 50 000 ₽</span>
+          <span>Awwwards-витрина</span>
+          <span>живой продукт</span>
+        </span>
+      </span>
+    </h1>
+    <p class="hero-sub">
+      Три абсолютно разных визуальных мира — от аналогового веб-синтезатора и секретного спекизи-бара до кино-FPV дронов. Откройте любое демо: внутри реальный 60fps моушн, физика слайдеров, скролл-сценарии и приём заявок в Telegram.
+    </p>
+    <div class="hero-bar">
+      <button class="mag-cta" id="openBriefHero" type="button">Обсудить свой сайт &rarr;</button>
+      <button class="copy-tg" id="copyTgBtn" type="button">
+        <span id="tgHandleText">@iamhaveyou</span>
+        <span style="color:var(--muted);font-size:11px" id="copyState">скопировать</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 3 UNCONVENTIONAL DEMO CARDS -->
+  <section class="projects-grid" id="demos">
+    <!-- 01 KURO // LAB -->
+    <article class="proj-card" data-accent="orange">
+      <div class="proj-preview">
+        <div class="kuro-mini-bg">
+          <canvas id="miniScope" width="420" height="230"></canvas>
+        </div>
+        <span class="proj-badge" style="color:#FF6A2B">01 // WEB AUDIO + HARDWARE</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <h2 class="proj-title">KURO // LAB</h2>
+          <p class="proj-desc">Ателье штучных аналоговых синтезаторов. Рабочий Web Audio движок + живой осциллограф, 4 упругих Jelly Slider, Morph Island, конфигуратор корпуса и Hold-to-Reserve.</p>
+          <div class="tag-row">
+            <span class="m-tag">Morph Island</span>
+            <span class="m-tag">Jelly Sliders</span>
+            <span class="m-tag">Hold to Reserve</span>
+            <span class="m-tag">Scramble Text</span>
+          </div>
+        </div>
+        <a class="open-demo" href="./kuro-synth/index.html">Открыть демо &rarr;</a>
+      </div>
+    </article>
+
+    <!-- 02 SOLIS // NOCTURNE -->
+    <article class="proj-card" data-accent="brass">
+      <div class="proj-preview">
+        <img src="./assets/solis-hero.jpg" alt="SOLIS Nocturne спекизи-бар">
+        <span class="proj-badge" style="color:#D4A85F">02 // EDITORIAL + PIN SCROLL</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <h2 class="proj-title">SOLIS // NOCTURNE</h2>
+          <p class="proj-desc">Секретный ночной спекизи-бар. Журнальная типографика, Read-Along манифест по скроллу, горизонтальная pinned-галерея GSAP, веерные Fan Cards и 3D-билет пропуска.</p>
+          <div class="tag-row">
+            <span class="m-tag">Read Along</span>
+            <span class="m-tag">GSAP Pin Scroll</span>
+            <span class="m-tag">3D Parallax Ticket</span>
+            <span class="m-tag">Weight Wave</span>
+          </div>
+        </div>
+        <a class="open-demo" href="./solis-atelier/index.html">Открыть демо &rarr;</a>
+      </div>
+    </article>
+
+    <!-- 03 APEX // FPV CINEMA -->
+    <article class="proj-card" data-accent="acid">
+      <div class="proj-preview">
+        <img src="./assets/apex-drift.jpg" alt="APEX FPV Cinema съёмка дрифта">
+        <span class="proj-badge" style="color:#C8FF00">03 // ACID-BRUTAL + PHYSICS</span>
+      </div>
+      <div class="proj-body">
+        <div>
+          <h2 class="proj-title">APEX // FPV CINEMA</h2>
+          <p class="proj-desc">Студия скоростных кино-FPV дронов 240 км/ч. Живой полёт дрона с телеметрией за курсором, SVG Goo Morph переключатель, оптическая лупа Glass Lens и Expand-кейсы.</p>
+          <div class="tag-row">
+            <span class="m-tag">FPV Physics Canvas</span>
+            <span class="m-tag">SVG Goo Morph</span>
+            <span class="m-tag">Glass Lens</span>
+            <span class="m-tag">Expand Bento</span>
+          </div>
+        </div>
+        <a class="open-demo" href="./apex-fpv/index.html">Открыть демо &rarr;</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- COMMERCIAL TERMS -->
+  <section class="terms-panel" id="terms">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--accent);margin-bottom:10px">УСЛОВИЯ РАБОТЫ ПОД КЛЮЧ</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(24px,3.2vw,38px);line-height:1.12">Сделаю такой уровень для вашего бизнеса за 24–48 часов.</h2>
+      <div class="terms-grid">
+        <div class="term-box"><strong>От 4 000 ₽</strong><span>Честная фиксированная цена без агентских накруток</span></div>
+        <div class="term-box"><strong>Оплата после показа</strong><span>Сначала смотрите живое демо на телефоне и ПК — потом платите</span></div>
+        <div class="term-box"><strong>Заявки в Telegram</strong><span>Каждый лид, расчёт и бронь падают прямо вам в мессенджер</span></div>
+        <div class="term-box"><strong>375px + 1440px</strong><span>Безупречный адаптив, быстрая загрузка и готовый хостинг</span></div>
+      </div>
+    </div>
+    <div class="offer-cta-box">
+      <h3>Нужен продающий сайт, который выделяется?</h3>
+      <p>Напишите вашу нишу в Telegram — за 15 минут предложу нестандартную концепцию и покажу первый экран ещё до оплаты.</p>
+      <a class="btn-acid-full" id="offerTgLink" href="https://t.me/iamhaveyou" target="_blank" rel="noopener">Написать в Telegram &rarr;</a>
+      <button class="open-demo" id="openBriefTerms" type="button">Оставить заявку на сайте</button>
+    </div>
+  </section>
+</main>
+
+<!-- RUBBER DOCK (DesignBookmark Motion) -->
+<div class="dock-wrap">
+  <nav class="rubber-dock" id="rubberDock" aria-label="Быстрая навигация">
+    <a class="dock-item" href="./kuro-synth/index.html">01 KURO</a>
+    <a class="dock-item" href="./solis-atelier/index.html">02 SOLIS</a>
+    <a class="dock-item" href="./apex-fpv/index.html">03 APEX</a>
+    <button class="dock-item" id="dockCmdBtn" type="button">Ctrl+K</button>
+  </nav>
+</div>
+
+<!-- COMMAND PALETTE DIALOG -->
+<dialog class="pal" id="cmdDialog" closedby="any" aria-label="Палитра команд">
+  <input class="pal-input" id="cmdSearch" placeholder="Введите название демо или действие..." autocomplete="off">
+  <div class="pal-list" id="cmdList">
+    <button class="pal-row" data-href="./kuro-synth/index.html"><span>01 · KURO // LAB — Аналоговые синтезаторы</span><small>Web Audio · Jelly</small></button>
+    <button class="pal-row" data-href="./solis-atelier/index.html"><span>02 · SOLIS // NOCTURNE — Спекизи-бар</span><small>Pin Scroll · 3D Ticket</small></button>
+    <button class="pal-row" data-href="./apex-fpv/index.html"><span>03 · APEX // FPV — Кино-дроны 240 км/ч</span><small>Goo · Glass Lens</small></button>
+    <button class="pal-row" data-action="brief"><span>Оставить заявку на разработку сайта</span><small>Telegram Bot</small></button>
+    <button class="pal-row" data-action="copy"><span>Скопировать контакт Telegram</span><small id="palTgHint">@iamhaveyou</small></button>
+  </div>
+</dialog>
+
+<!-- QUICK BRIEF DIALOG -->
+<dialog class="brief" id="briefDialog" closedby="any" aria-labelledby="briefTitle">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h3 id="briefTitle" style="font-family:var(--font-display);font-size:19px">Заявка на сайт</h3>
+    <button type="button" id="closeBriefBtn" style="color:var(--muted);font-size:20px" aria-label="Закрыть">&times;</button>
+  </div>
+  <form id="briefForm">
+    <div class="b-field"><label for="brName">ВАШЕ ИМЯ</label><input id="brName" required placeholder="Роман"></div>
+    <div class="b-field"><label for="brContact">TELEGRAM / ТЕЛЕФОН</label><input id="brContact" required placeholder="@username"></div>
+    <div class="b-field"><label for="brNiche">НИША БИЗНЕСА</label><input id="brNiche" required placeholder="Студия, бар, автосервис, бренд..."></div>
+    <button class="btn-acid-full" style="width:100%" type="submit" id="briefSubmit">Отправить в Telegram</button>
+    <div id="briefNote" style="margin-top:10px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--muted)">Отвечу в течение 15 минут</div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  // === ГЛАВНЫЙ КОНФИГ КОНТАКТОВ ===
+  const CONTACT_CONFIG = {
+    TG_HANDLE: "@iamhaveyou",
+    BOT_TOKEN: "",
+    CHAT_ID: ""
+  };
+
+  // Sync TG links & handles
+  const cleanHandle = CONTACT_CONFIG.TG_HANDLE.replace(/^@/, "");
+  const tgUrl = `https://t.me/${cleanHandle}`;
+  document.getElementById("topTgLink").href = tgUrl;
+  document.getElementById("offerTgLink").href = tgUrl;
+  document.getElementById("tgHandleText").textContent = CONTACT_CONFIG.TG_HANDLE;
+  document.getElementById("palTgHint").textContent = CONTACT_CONFIG.TG_HANDLE;
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced && window.Lenis) {
+    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  // --- Blend-Mode Custom Cursor ---
+  const cursor = document.getElementById("blendCursor");
+  if (!prefersReduced && window.matchMedia("(pointer: fine)").matches) {
+    let cx = 0, cy = 0, tx = 0, ty = 0;
+    window.addEventListener("mousemove", (e) => {
+      tx = e.clientX; ty = e.clientY;
+      cursor.style.opacity = "1";
+    });
+    const loop = () => {
+      cx += (tx - cx) * 0.22;
+      cy += (ty - cy) * 0.22;
+      cursor.style.left = `${cx}px`;
+      cursor.style.top = `${cy}px`;
+      requestAnimationFrame(loop);
+    };
+    loop();
+    document.querySelectorAll("a, button, .proj-card").forEach((el) => {
+      el.addEventListener("mouseenter", () => cursor.classList.add("active"));
+      el.addEventListener("mouseleave", () => cursor.classList.remove("active"));
+    });
+  }
+
+  // --- Hero Word Roll ---
+  const heroRoll = document.getElementById("heroRoll");
+  let rIdx = 0;
+  if (!prefersReduced) {
+    setInterval(() => {
+      rIdx = (rIdx + 1) % 3;
+      heroRoll.style.transform = `translateY(-${(rIdx * 1.24).toFixed(2)}em)`;
+    }, 2800);
+  }
+
+  // --- Live Mini-Oscilloscope on KURO card ---
+  const ms = document.getElementById("miniScope");
+  const mctx = ms.getContext("2d");
+  let mph = 0;
+  function drawMiniScope() {
+    mph += 0.045;
+    mctx.clearRect(0, 0, ms.width, ms.height);
+    mctx.strokeStyle = "rgba(255,255,255,0.06)";
+    mctx.beginPath(); mctx.moveTo(0, ms.height / 2); mctx.lineTo(ms.width, ms.height / 2); mctx.stroke();
+    mctx.beginPath();
+    mctx.strokeStyle = "#FF4D00";
+    mctx.lineWidth = 2.6;
+    mctx.shadowColor = "rgba(255,77,0,0.8)";
+    mctx.shadowBlur = 14;
+    for (let x = 0; x <= ms.width; x += 4) {
+      const nx = x / ms.width;
+      const y = ms.height / 2 + Math.sin(nx * 14 + mph) * Math.sin(nx * Math.PI) * 52 + Math.cos(nx * 29 - mph * 1.6) * 10;
+      if (x === 0) mctx.moveTo(x, y); else mctx.lineTo(x, y);
+    }
+    mctx.stroke();
+    mctx.shadowBlur = 0;
+    if (!prefersReduced) requestAnimationFrame(drawMiniScope);
+  }
+  drawMiniScope();
+
+  // --- 3D Card Tilt ---
+  if (!prefersReduced) {
+    document.querySelectorAll(".proj-card").forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        const rx = (0.5 - (e.clientY - r.top) / r.height) * 6;
+        const ry = ((e.clientX - r.left) / r.width - 0.5) * 7;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      });
+      card.addEventListener("mouseleave", () => { card.style.transform = ""; });
+    });
+  }
+
+  // --- Rubber Dock Magnification (DesignBookmark Motion) ---
+  const dock = document.getElementById("rubberDock");
+  const dockItems = [...dock.querySelectorAll(".dock-item")];
+  if (!prefersReduced) {
+    dock.addEventListener("mousemove", (e) => {
+      dockItems.forEach((it) => {
+        const r = it.getBoundingClientRect();
+        const dist = Math.abs(e.clientX - (r.left + r.width / 2));
+        const sc = 1 + Math.max(0, 1 - dist / 120) * 0.24;
+        it.style.transform = `scale(${sc.toFixed(3)}) translateY(${-((sc - 1) * 18).toFixed(1)}px)`;
+      });
+    });
+    dock.addEventListener("mouseleave", () => {
+      dockItems.forEach((it) => { it.style.transform = "scale(1) translateY(0)"; });
+    });
+  }
+
+  // --- Copy Telegram Handle ---
+  const copyBtn = document.getElementById("copyTgBtn");
+  const copyState = document.getElementById("copyState");
+  async function copyTg() {
+    try { await navigator.clipboard.writeText(CONTACT_CONFIG.TG_HANDLE); } catch (_) {}
+    copyBtn.classList.add("copied");
+    copyState.textContent = "скопировано!";
+    setTimeout(() => { copyBtn.classList.remove("copied"); copyState.textContent = "скопировать"; }, 1800);
+  }
+  copyBtn.addEventListener("click", copyTg);
+
+  // --- Command Palette (Ctrl+K) + Brief Modal + Light-Dismiss Fallback ---
+  const cmdDialog = document.getElementById("cmdDialog");
+  const briefDialog = document.getElementById("briefDialog");
+  const cmdSearch = document.getElementById("cmdSearch");
+  const cmdRows = [...document.querySelectorAll(".pal-row")];
+
+  function attachBackdropFallback(dlg) {
+    if ("closedBy" in HTMLDialogElement.prototype) return;
+    dlg.addEventListener("click", (e) => {
+      if (e.target !== dlg) return;
+      const r = dlg.getBoundingClientRect();
+      if (!(r.top <= e.clientY && e.clientY <= r.bottom && r.left <= e.clientX && e.clientX <= r.right)) dlg.close();
+    });
+  }
+  attachBackdropFallback(cmdDialog);
+  attachBackdropFallback(briefDialog);
+
+  function openCmd() {
+    cmdSearch.value = "";
+    cmdRows.forEach((r) => { r.style.display = "flex"; });
+    cmdDialog.showModal();
+    cmdSearch.focus();
+  }
+  document.getElementById("openCmdBtn").addEventListener("click", openCmd);
+  document.getElementById("dockCmdBtn").addEventListener("click", openCmd);
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      if (cmdDialog.open) cmdDialog.close(); else openCmd();
+    }
+  });
+  cmdSearch.addEventListener("input", () => {
+    const q = cmdSearch.value.trim().toLowerCase();
+    cmdRows.forEach((r) => { r.style.display = r.textContent.toLowerCase().includes(q) ? "flex" : "none"; });
+  });
+  cmdRows.forEach((r) => {
+    r.addEventListener("click", () => {
+      cmdDialog.close();
+      if (r.dataset.href) window.location.href = r.dataset.href;
+      else if (r.dataset.action === "brief") briefDialog.showModal();
+      else if (r.dataset.action === "copy") copyTg();
+    });
+  });
+
+  document.getElementById("openBriefHero").addEventListener("click", () => briefDialog.showModal());
+  document.getElementById("openBriefTerms").addEventListener("click", () => briefDialog.showModal());
+  document.getElementById("closeBriefBtn").addEventListener("click", () => briefDialog.close());
+
+  document.getElementById("briefForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("briefSubmit");
+    const note = document.getElementById("briefNote");
+    btn.textContent = "Отправка...";
+    const text = `Заявка на разработку сайта\nИмя: ${document.getElementById("brName").value}\nКонтакт: ${document.getElementById("brContact").value}\nНиша: ${document.getElementById("brNiche").value}`;
+    try {
+      if (CONTACT_CONFIG.BOT_TOKEN && CONTACT_CONFIG.CHAT_ID) {
+        await fetch(`https://api.telegram.org/bot${CONTACT_CONFIG.BOT_TOKEN}/sendMessage`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CONTACT_CONFIG.CHAT_ID, text })
+        });
+        note.textContent = "Заявка доставлена в Telegram!";
+      } else {
+        await new Promise((r) => setTimeout(r, 550));
+        note.textContent = "Демо-режим: впишите BOT_TOKEN и CHAT_ID в CONTACT_CONFIG.";
+      }
+      btn.textContent = "Отправлено!";
+      setTimeout(() => { briefDialog.close(); btn.textContent = "Отправить в Telegram"; }, 1400);
+    } catch (_) {
+      btn.textContent = "Повторить";
+    }
+  });
+</script>
+</body>
+</html>

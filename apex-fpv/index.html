@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX // FPV CINEMA — Скоростная воздушная кинематография 240 км/ч</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Manrope:wght@500;600;700;800&family=Unbounded:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2F1EC;
+    --ink: #0D0E11;
+    --card: #FFFFFF;
+    --acid: #C8FF00;
+    --indigo: #3B4EFF;
+    --muted: #5A5D66;
+    --border: rgba(13, 14, 17, 0.14);
+    --font-display: "Unbounded", "Manrope", sans-serif;
+    --font-sans: "Manrope", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --ease-spring: cubic-bezier(0.22, 1.32, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--paper); color: var(--ink); font-family: var(--font-sans); }
+  body { background: var(--paper); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ================= HEADER ================= */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    background: rgba(242, 241, 236, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1.5px solid var(--ink);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .nav-l { display: flex; align-items: center; gap: 16px; }
+  .back-chip {
+    padding: 7px 14px;
+    border-radius: 9999px;
+    border: 1.5px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .back-chip:hover { background: var(--ink); color: var(--acid); }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-tag {
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--acid);
+    border: 1.5px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .cta-brutal {
+    height: 42px;
+    padding: 0 20px;
+    border-radius: 9999px;
+    background: var(--ink);
+    color: var(--acid);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: transform 0.25s var(--ease-spring), background 0.2s ease, color 0.2s ease;
+  }
+  .cta-brutal:hover { background: var(--indigo); color: #fff; }
+
+  /* ================= HERO WITH LIVE INTERACTIVE FPV FLIGHT CANVAS ================= */
+  .hero {
+    position: relative;
+    min-height: 82vh;
+    padding: 54px 32px 64px;
+    border-bottom: 1.5px solid var(--ink);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  #fpvCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  .hero-wrap {
+    position: relative;
+    z-index: 3;
+    max-width: 1320px;
+    width: 100%;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+  .hero-wrap a, .hero-wrap button { pointer-events: auto; }
+
+  .hud-strip {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .hud-pill {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .hud-pill.acid { background: var(--acid); }
+
+  h1.acid-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6.2vw, 86px);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    font-weight: 900;
+    max-width: 960px;
+    margin-bottom: 24px;
+  }
+  h1.acid-title mark {
+    background: var(--acid);
+    color: var(--ink);
+    padding: 0 12px;
+    border-radius: 12px;
+    display: inline-block;
+    border: 2px solid var(--ink);
+  }
+
+  .hero-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1080px;
+  }
+  .hero-desc {
+    max-width: 490px;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 600;
+    color: var(--muted);
+    background: rgba(242, 241, 236, 0.82);
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .mag-acid {
+    height: 56px;
+    padding: 0 28px;
+    border-radius: 14px;
+    background: var(--acid);
+    border: 2px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+  }
+  .mag-acid:hover { box-shadow: 2px 2px 0 var(--ink); }
+
+  /* ================= DUAL KINETIC MARQUEE ================= */
+  .marquee-band {
+    background: var(--ink);
+    color: var(--acid);
+    border-bottom: 1.5px solid var(--ink);
+    padding: 16px 0;
+    overflow: hidden;
+  }
+  .marquee-row {
+    display: flex;
+    width: max-content;
+    gap: 36px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ================= GOO MORPH MODE SWITCH + GLASS LENS SHOWREEL (DesignBookmark Motion) ================= */
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 84px 32px; }
+  .sec-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 34px;
+  }
+  .sec-h {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 3.6vw, 44px);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+
+  /* SVG GOO MORPH SWITCH */
+  .goo-stage {
+    position: relative;
+    display: inline-flex;
+    padding: 8px;
+    border-radius: 9999px;
+    background: var(--ink);
+  }
+  .goo-blobs {
+    position: absolute;
+    inset: 8px;
+    filter: url(#gooFilter);
+    pointer-events: none;
+  }
+  .goo-pill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 130px;
+    border-radius: 9999px;
+    background: var(--acid);
+    transition: transform 0.55s var(--ease-spring), width 0.4s var(--ease-spring);
+  }
+  .goo-trail {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 0;
+    width: 90px;
+    border-radius: 9999px;
+    background: var(--acid);
+    transition: transform 0.72s cubic-bezier(0.22, 1.15, 0.36, 1);
+  }
+  .goo-btn {
+    position: relative;
+    z-index: 2;
+    width: 130px;
+    height: 40px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    transition: color 0.25s ease;
+  }
+  .goo-btn.active { color: var(--ink); }
+
+  /* GLASS LENS FRAME (DesignBookmark Motion) */
+  .lens-showcase {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .lens-frame {
+    position: relative;
+    height: 440px;
+    border-radius: 22px;
+    border: 2px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--ink);
+    overflow: hidden;
+    cursor: none;
+    background: #0D0E11;
+  }
+  .lens-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.35s ease;
+  }
+  .glass-lens {
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    border: 2.5px solid var(--acid);
+    box-shadow: 0 0 0 2px var(--ink), 0 18px 40px rgba(0, 0, 0, 0.5), inset 0 0 26px rgba(200, 255, 0, 0.22);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 0.2s ease, transform 0.28s var(--ease-spring);
+  }
+  .lens-frame:hover .glass-lens { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .lens-badge {
+    position: absolute;
+    left: 16px; bottom: 16px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(13, 14, 17, 0.86);
+    color: var(--acid);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    border: 1px solid rgba(200, 255, 0, 0.45);
+  }
+
+  /* STAT CARDS */
+  .stats-col { display: flex; flex-direction: column; gap: 16px; }
+  .stat-card {
+    flex: 1;
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    padding: 22px 24px;
+    box-shadow: 5px 5px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .stat-card.dark { background: var(--ink); color: var(--paper); }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+  .stat-card.dark .stat-num { color: var(--acid); }
+  .stat-lbl { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+  .stat-card.dark .stat-lbl { color: #B4B7C2; }
+
+  /* ================= EXPAND BENTO CASES (DesignBookmark Motion) ================= */
+  .expand-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .exp-card {
+    background: var(--card);
+    border: 2px solid var(--ink);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 5px 5px 0 var(--ink);
+    cursor: pointer;
+    transition: transform 0.35s var(--ease-spring), background 0.25s ease;
+  }
+  .exp-card:hover { transform: translateY(-4px); }
+  .exp-card.open { background: var(--ink); color: var(--paper); }
+  .exp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: var(--font-mono); font-size: 11.5px; }
+  .exp-plus {
+    width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid currentColor;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+    transition: transform 0.35s var(--ease-spring);
+  }
+  .exp-card.open .exp-plus { transform: rotate(45deg); background: var(--acid); color: var(--ink); border-color: var(--acid); }
+  .exp-card h3 { font-family: var(--font-display); font-size: 19px; margin-bottom: 8px; }
+  .exp-short { font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .exp-card.open .exp-short { color: #B9BCC8; }
+  .exp-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s var(--ease-spring), margin-top 0.3s ease;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--acid);
+  }
+  .exp-card.open .exp-details { max-height: 180px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(200,255,0,0.35); }
+
+  /* MODAL */
+  dialog.modal {
+    margin: auto;
+    width: min(460px, calc(100vw - 28px));
+    padding: 28px;
+    border-radius: 22px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--ink);
+    color: var(--ink);
+  }
+  dialog.modal::backdrop { background: rgba(13, 14, 17, 0.7); backdrop-filter: blur(6px); }
+  .m-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .m-top h3 { font-family: var(--font-display); font-size: 20px; }
+  .m-x { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--ink); font-size: 18px; }
+  .m-in { margin-bottom: 12px; }
+  .m-in label { display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+  .m-in input {
+    width: 100%; height: 44px; padding: 0 13px; border-radius: 10px;
+    border: 1.5px solid var(--ink); background: #fff; font-size: 14px; outline: none;
+  }
+  .m-go {
+    width: 100%; height: 48px; border-radius: 12px; background: var(--ink); color: var(--acid);
+    font-family: var(--font-display); font-size: 13px; font-weight: 800; margin-top: 6px;
+  }
+  .m-go.ok { background: #149E5A; color: #fff; }
+  .m-status { margin-top: 10px; text-align: center; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+  footer.foot {
+    border-top: 1.5px solid var(--ink);
+    padding: 28px 32px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  @media (max-width: 960px) {
+    .lens-showcase, .expand-grid { grid-template-columns: 1fr; }
+    .lens-frame { height: 300px; cursor: default; }
+    .glass-lens { display: none; }
+    header.nav { padding: 12px 16px; }
+    .hero, .wrap { padding: 48px 16px; }
+    .goo-btn, .goo-pill { width: 104px; font-size: 11px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG GOO FILTER (DesignBookmark Motion — Goo Morph) -->
+<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <defs>
+    <filter id="gooFilter">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo"/>
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+    </filter>
+  </defs>
+</svg>
+
+<header class="nav">
+  <div class="nav-l">
+    <a class="back-chip" href="../index.html">&larr; Портфолио</a>
+    <div class="brand">APEX // FPV <span class="brand-tag">RED 6K</span></div>
+  </div>
+  <button class="cta-brutal" id="openShootBtn">РАССЧИТАТЬ СЪЁМКУ</button>
+</header>
+
+<section class="hero">
+  <canvas id="fpvCanvas"></canvas>
+  <div class="hero-wrap">
+    <div class="hud-strip">
+      <span class="hud-pill acid" id="hudSpeed">SPEED 000 KM/H</span>
+      <span class="hud-pill" id="hudG">G-FORCE 1.0G</span>
+      <span class="hud-pill" id="hudAlt">ALT 4.2M · ДВИГАЙТЕ КУРСОРОМ</span>
+    </div>
+    <h1 class="acid-title">Снимаем кино на <mark>240 км/ч</mark> одним дублем.</h1>
+    <div class="hero-foot">
+      <p class="hero-desc">
+        Тяжёлые карбоновые FPV-дроны с кинокамерой RED Komodo на борту. Пролетаем сквозь открытые окна дрифт-каров, цеха заводов и ночные концерты без склеек.
+      </p>
+      <div class="hero-btns">
+        <button class="mag-acid" id="heroBookBtn">Заказать вылет &rarr;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KINETIC MARQUEE -->
+<div class="marquee-band">
+  <div class="marquee-row" id="marqueeRow">
+    <span>DRIFT CHASE 240 KM/H</span><span>&bull;</span>
+    <span>ONE-TAKE CINEMA</span><span>&bull;</span>
+    <span>RED KOMODO 6K RAW</span><span>&bull;</span>
+    <span>INDOOR MICRO FPV</span><span>&bull;</span>
+    <span>DRIFT CHASE 240 KM/H</span><span>&bull;</span>
+    <span>ONE-TAKE CINEMA</span><span>&bull;</span>
+    <span>RED KOMODO 6K RAW</span><span>&bull;</span>
+    <span>INDOOR MICRO FPV</span><span>&bull;</span>
+  </div>
+</div>
+
+<!-- GOO MORPH SWITCHER + GLASS LENS INSPECTOR -->
+<section class="wrap">
+  <div class="sec-top">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--indigo);margin-bottom:8px">01 // РЕЖИМЫ ПИЛОТИРОВАНИЯ + ОПТИЧЕСКАЯ ЛИНЗА</div>
+      <h2 class="sec-h">Наведите линзу на кадр — проверьте резкость 6K.</h2>
+    </div>
+
+    <div class="goo-stage" id="gooStage">
+      <div class="goo-blobs">
+        <div class="goo-trail" id="gooTrail"></div>
+        <div class="goo-pill" id="gooPill"></div>
+      </div>
+      <button class="goo-btn active" data-idx="0" data-img="../assets/apex-drift.jpg" data-cap="DRIFT CHASE // 185 KM/H · MOSCOW RACEWAY">DRIFT</button>
+      <button class="goo-btn" data-idx="1" data-img="../assets/apex-rig.jpg" data-cap="HEAVY-LIFT // RED KOMODO 6K + ANAMORPHIC">CINEMA</button>
+      <button class="goo-btn" data-idx="2" data-img="../assets/apex-drift.jpg" data-cap="ONE-TAKE // ПРОЛЁТ БЕЗ ЕДИНОЙ СКЛЕЙКИ">ONE-TAKE</button>
+    </div>
+  </div>
+
+  <div class="lens-showcase">
+    <div class="lens-frame" id="lensFrame">
+      <img id="lensImg" src="../assets/apex-drift.jpg" alt="Кадр съёмки с кино-FPV дрона">
+      <div class="glass-lens" id="glassLens"></div>
+      <div class="lens-badge" id="lensBadge">DRIFT CHASE // 185 KM/H · MOSCOW RACEWAY</div>
+    </div>
+
+    <div class="stats-col">
+      <div class="stat-card dark">
+        <div class="stat-num" data-count="240" data-suffix=" км/ч">0 км/ч</div>
+        <div class="stat-lbl">Максимальная скорость погони за спорткарами</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" data-count="120" data-suffix=" fps">0 fps</div>
+        <div class="stat-lbl">Кино-слоумоушн в 4K RAW без желе и вибраций</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" data-count="140" data-suffix="+">0+</div>
+        <div class="stat-lbl">Рекламных роликов, клипов и автошоу снято</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPAND BENTO CASES -->
+<section class="wrap" style="padding-top:16px">
+  <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--indigo);margin-bottom:8px">02 // КЕЙСЫ И СМЕТА (КЛИКНИТЕ ДЛЯ РАСКРЫТИЯ)</div>
+  <h2 class="sec-h" style="margin-bottom:28px">Три формата воздушного продакшна</h2>
+
+  <div class="expand-grid">
+    <article class="exp-card open">
+      <div class="exp-head"><span>CASE_01 // AUTO</span><span class="exp-plus">+</span></div>
+      <h3>Дрифт и авто-реклама</h3>
+      <p class="exp-short">Преследование в 40 см от бампера на треке или в ночном городе.</p>
+      <div class="exp-details">
+        СЕТАП: 7" Cinelifter + RED Komodo<br>
+        КОМАНДА: Пилот + 1AC фокус-пуллер<br>
+        СМЕНА: от 65 000 ₽ под ключ
+      </div>
+    </article>
+
+    <article class="exp-card">
+      <div class="exp-head"><span>CASE_02 // INDOOR</span><span class="exp-plus">+</span></div>
+      <h3>One-Take пролёт</h3>
+      <p class="exp-short">Непрерывный пролёт через офис, автосалон, отель или производство.</p>
+      <div class="exp-details">
+        СЕТАП: Защищённый 2.5" Cinewhoop<br>
+        ЗВУК: Саунд-дизайн пролёта включён<br>
+        СМЕНА: от 45 000 ₽ под ключ
+      </div>
+    </article>
+
+    <article class="exp-card">
+      <div class="exp-head"><span>CASE_03 // LIVE</span><span class="exp-plus">+</span></div>
+      <h3>Клипы и фестивали</h3>
+      <p class="exp-short">Динамичные нырки со сцены, пролёты над толпой и прямая трансляция.</p>
+      <div class="exp-details">
+        СЕТАП: Dual-operator HD Zero Link<br>
+        ДОПУСК: Страховка и согласование<br>
+        СМЕНА: от 80 000 ₽ под ключ
+      </div>
+    </article>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>APEX // FPV CINEMA · DEMO CONCEPT 03</span>
+  <span>Canvas FPV Physics · SVG Goo Morph · Glass Lens · Expand Bento · GSAP Marquee</span>
+</footer>
+
+<dialog class="modal" id="shootModal" closedby="any" aria-labelledby="shootTitle">
+  <div class="m-top">
+    <h3 id="shootTitle">Запрос на FPV-вылет</h3>
+    <button class="m-x" type="button" id="closeShootBtn" aria-label="Закрыть">&times;</button>
+  </div>
+  <form id="shootForm">
+    <div class="m-in"><label for="sName">ПРОДЮСЕР / КОМПАНИЯ</label><input id="sName" required placeholder="Иван / Studio"></div>
+    <div class="m-in"><label for="sContact">TELEGRAM ИЛИ ТЕЛЕФОН</label><input id="sContact" required placeholder="@username"></div>
+    <div class="m-in"><label for="sTask">ЛОКАЦИЯ И ЗАДАЧА</label><input id="sTask" required placeholder="Дрифт на треке, 1 смена"></div>
+    <button class="m-go" type="submit" id="shootSubmit">ОТПРАВИТЬ БРИФ В TELEGRAM</button>
+    <div class="m-status" id="shootNote">Ответ пилота и расчёт в течение 20 минут</div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  const TELEGRAM_CONFIG = { BOT_TOKEN: "", CHAT_ID: "" };
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!prefersReduced && window.Lenis) {
+    const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    lenis.on("scroll", () => { if (window.ScrollTrigger) ScrollTrigger.update(); });
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  // --- Interactive FPV Drone Telemetry Flight Canvas ---
+  const cv = document.getElementById("fpvCanvas");
+  const ctx = cv.getContext("2d");
+  const hudSpeed = document.getElementById("hudSpeed");
+  const hudG = document.getElementById("hudG");
+  const hudAlt = document.getElementById("hudAlt");
+
+  function resizeCv() {
+    const r = cv.getBoundingClientRect();
+    cv.width = Math.max(320, Math.round(r.width));
+    cv.height = Math.max(320, Math.round(r.height));
+  }
+  resizeCv();
+  window.addEventListener("resize", resizeCv);
+
+  const drone = { x: cv.width * 0.72, y: cv.height * 0.36, vx: 0, vy: 0, tx: cv.width * 0.72, ty: cv.height * 0.36 };
+  const trail = [];
+  document.querySelector(".hero").addEventListener("pointermove", (e) => {
+    const r = cv.getBoundingClientRect();
+    drone.tx = e.clientX - r.left;
+    drone.ty = e.clientY - r.top;
+  });
+
+  let tick = 0;
+  function renderFpv() {
+    tick++;
+    const w = cv.width, h = cv.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Architectural grid
+    ctx.strokeStyle = "rgba(13,14,17,0.065)";
+    ctx.lineWidth = 1;
+    for (let x = 0; x < w; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = 0; y < h; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+    // Smooth inertia flight
+    const ax = (drone.tx - drone.x) * 0.045;
+    const ay = (drone.ty - drone.y) * 0.045;
+    drone.vx = (drone.vx + ax) * 0.84;
+    drone.vy = (drone.vy + ay) * 0.84;
+    drone.x += drone.vx;
+    drone.y += drone.vy;
+
+    trail.push({ x: drone.x, y: drone.y });
+    if (trail.length > 34) trail.shift();
+
+    // Acid ribbon trail
+    if (trail.length > 2) {
+      for (let i = 1; i < trail.length; i++) {
+        const a = i / trail.length;
+        ctx.strokeStyle = `rgba(59, 78, 255, ${a * 0.45})`;
+        ctx.lineWidth = a * 9;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+        ctx.lineTo(trail[i].x, trail[i].y);
+        ctx.stroke();
+      }
+    }
+
+    // Target reticle + FPV craft vector
+    const spd = Math.hypot(drone.vx, drone.vy);
+    const kmh = Math.min(240, Math.round(spd * 11.5));
+    const gf = (1 + spd * 0.14).toFixed(1);
+    if (tick % 4 === 0) {
+      hudSpeed.textContent = `SPEED ${String(kmh).padStart(3, "0")} KM/H`;
+      hudG.textContent = `G-FORCE ${gf}G`;
+      hudAlt.textContent = `ALT ${Math.max(1.2, (1 - drone.y / h) * 18).toFixed(1)}M`;
+    }
+
+    ctx.save();
+    ctx.translate(drone.x, drone.y);
+    ctx.rotate(Math.atan2(drone.vy, drone.vx || 0.01) * 0.25);
+    ctx.fillStyle = "#0D0E11";
+    ctx.strokeStyle = "#C8FF00";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // 4 rotor arms
+    [[-16,-12],[16,-12],[-16,12],[16,12]].forEach(([rx, ry]) => {
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(rx, ry); ctx.strokeStyle = "#0D0E11"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.arc(rx, ry, 7, 0, Math.PI * 2); ctx.fillStyle = "rgba(200,255,0,0.65)"; ctx.fill();
+    });
+    ctx.restore();
+
+    if (!prefersReduced) requestAnimationFrame(renderFpv);
+  }
+  renderFpv();
+
+  // --- Kinetic Marquee + Stat Counters ---
+  if (window.gsap && !prefersReduced) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to("#marqueeRow", { xPercent: -50, duration: 16, repeat: -1, ease: "none" });
+    document.querySelectorAll(".stat-num").forEach((el) => {
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || "";
+      const obj = { v: 0 };
+      gsap.to(obj, {
+        v: target, duration: 1.5, ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 88%" },
+        onUpdate: () => { el.textContent = Math.round(obj.v) + suffix; }
+      });
+    });
+  } else {
+    document.querySelectorAll(".stat-num").forEach((el) => { el.textContent = el.dataset.count + (el.dataset.suffix || ""); });
+  }
+
+  // --- Goo Morph Mode Switcher + Glass Lens (DesignBookmark Motion) ---
+  const gooPill = document.getElementById("gooPill");
+  const gooTrail = document.getElementById("gooTrail");
+  const gooBtns = [...document.querySelectorAll(".goo-btn")];
+  const lensImg = document.getElementById("lensImg");
+  const lensFrame = document.getElementById("lensFrame");
+  const glassLens = document.getElementById("glassLens");
+  const lensBadge = document.getElementById("lensBadge");
+
+  function syncLensBg() {
+    glassLens.style.backgroundImage = `url('${lensImg.getAttribute("src")}')`;
+  }
+  syncLensBg();
+
+  gooBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      gooBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const x = btn.offsetLeft - 8;
+      gooPill.style.transform = `translateX(${x}px)`;
+      gooTrail.style.transform = `translateX(${x + 18}px)`;
+      lensImg.src = btn.dataset.img;
+      lensBadge.textContent = btn.dataset.cap;
+      syncLensBg();
+    });
+  });
+
+  lensFrame.addEventListener("mousemove", (e) => {
+    const r = lensFrame.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const zoom = 2.15;
+    glassLens.style.left = `${x}px`;
+    glassLens.style.top = `${y}px`;
+    glassLens.style.backgroundSize = `${r.width * zoom}px ${r.height * zoom}px`;
+    glassLens.style.backgroundPosition = `${-x * zoom + 85}px ${-y * zoom + 85}px`;
+  });
+
+  // --- Expand Cards (DesignBookmark Motion) ---
+  document.querySelectorAll(".exp-card").forEach((c) => {
+    c.addEventListener("click", () => c.classList.toggle("open"));
+  });
+
+  // --- Modal + Light-Dismiss + Telegram ---
+  const shootModal = document.getElementById("shootModal");
+  document.getElementById("openShootBtn").addEventListener("click", () => shootModal.showModal());
+  document.getElementById("heroBookBtn").addEventListener("click", () => shootModal.showModal());
+  document.getElementById("closeShootBtn").addEventListener("click", () => shootModal.close());
+  if (!("closedBy" in HTMLDialogElement.prototype)) {
+    shootModal.addEventListener("click", (e) => {
+      if (e.target !== shootModal) return;
+      const r = shootModal.getBoundingClientRect();
+      if (!(r.top <= e.clientY && e.clientY <= r.bottom && r.left <= e.clientX && e.clientX <= r.right)) shootModal.close();
+    });
+  }
+  document.getElementById("shootForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("shootSubmit");
+    const note = document.getElementById("shootNote");
+    btn.textContent = "ОТПРАВКА...";
+    const text = `APEX // FPV — Запрос вылета\nПродюсер: ${document.getElementById("sName").value}\nКонтакт: ${document.getElementById("sContact").value}\nЗадача: ${document.getElementById("sTask").value}`;
+    try {
+      if (TELEGRAM_CONFIG.BOT_TOKEN && TELEGRAM_CONFIG.CHAT_ID) {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.CHAT_ID, text })
+        });
+        note.textContent = "Бриф улетел в Telegram!";
+      } else {
+        await new Promise((r) => setTimeout(r, 600));
+        note.textContent = "Демо-режим: впишите BOT_TOKEN и CHAT_ID вверху скрипта.";
+      }
+      btn.classList.add("ok");
+      btn.textContent = "БРИФ ПРИНЯТ!";
+      setTimeout(() => { shootModal.close(); btn.classList.remove("ok"); btn.textContent = "ОТПРАВИТЬ БРИФ В TELEGRAM"; }, 1400);
+    } catch (_) {
+      btn.textContent = "ПОВТОРИТЬ";
+    }
+  });
+</script>
+</body>
+</html>

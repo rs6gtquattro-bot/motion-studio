@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>KURO // LAB — Ателье аналоговых синтезаторов ручной сборки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080A;
+    --surface: #111115;
+    --surface-2: #18181E;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-hi: rgba(255, 255, 255, 0.22);
+    --text: #F2F2EE;
+    --muted: #8E8E98;
+    --accent: #FF4D00;
+    --accent-soft: rgba(255, 77, 0, 0.16);
+    --accent-glow: rgba(255, 77, 0, 0.42);
+    --ok: #22D38A;
+    --font-display: "Unbounded", "Manrope", system-ui, sans-serif;
+    --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --ease-spring: cubic-bezier(0.22, 1.32, 0.36, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); color: var(--text); font-family: var(--font-sans); scroll-behavior: auto; }
+  body {
+    background:
+      radial-gradient(ellipse 900px 520px at 78% 12%, rgba(255, 77, 0, 0.10), transparent 68%),
+      radial-gradient(ellipse 700px 480px at 14% 72%, rgba(255, 255, 255, 0.03), transparent 70%),
+      var(--bg);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle tactile dot grid */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000, transparent 90%);
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ================= MORPH ISLAND (DesignBookmark Motion) ================= */
+  .island-shell {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 90;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+  }
+  .morph-island {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 10px 8px 16px;
+    border-radius: 9999px;
+    background: rgba(14, 14, 18, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: padding 0.45s var(--ease-spring), border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .morph-island.expanded {
+    padding: 10px 14px 10px 18px;
+    border-color: rgba(255, 77, 0, 0.52);
+    box-shadow: 0 18px 50px rgba(255, 77, 0, 0.18), 0 14px 40px rgba(0, 0, 0, 0.7);
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .led-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    transition: transform 0.25s var(--ease-spring);
+  }
+  .morph-island.playing .led-dot {
+    background: var(--ok);
+    box-shadow: 0 0 12px var(--ok);
+    animation: pulseLed 0.9s infinite alternate;
+  }
+  @keyframes pulseLed { from { transform: scale(0.85); opacity: 0.7; } to { transform: scale(1.2); opacity: 1; } }
+
+  .island-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  /* Roll Links (DesignBookmark Motion) */
+  .roll-link {
+    position: relative;
+    display: inline-flex;
+    overflow: hidden;
+    height: 28px;
+    padding: 0 11px;
+    align-items: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    border-radius: 9999px;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+  .roll-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+  .roll-inner {
+    display: flex;
+    flex-direction: column;
+    height: 20px;
+    line-height: 20px;
+    overflow: hidden;
+  }
+  .roll-inner span {
+    display: block;
+    transition: transform 0.36s var(--ease-spring);
+  }
+  .roll-link:hover .roll-inner span { transform: translateY(-100%); }
+
+  .island-status {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: rgba(255, 77, 0, 0.14);
+    border: 1px solid rgba(255, 77, 0, 0.35);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #FF8E5C;
+  }
+  .morph-island.expanded .island-status { display: inline-flex; }
+
+  .island-cta {
+    height: 32px;
+    padding: 0 15px;
+    border-radius: 9999px;
+    background: var(--text);
+    color: #08080A;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transition: transform 0.25s var(--ease-spring), background 0.2s ease, color 0.2s ease;
+  }
+  .island-cta:hover { background: var(--accent); color: #fff; }
+
+  .back-link {
+    position: fixed;
+    top: 22px;
+    left: 22px;
+    z-index: 85;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 9999px;
+    background: rgba(17, 17, 21, 0.78);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    transition: all 0.25s ease;
+  }
+  .back-link:hover { color: var(--text); border-color: var(--border-hi); transform: translateX(-3px); }
+
+  /* ================= LAYOUT CONTAINER ================= */
+  .wrap {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ================= HERO + LIVE SYNTH CONSOLE ================= */
+  .hero {
+    padding: 124px 0 84px;
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    gap: 44px;
+    align-items: center;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .eyebrow strong { color: var(--accent); font-weight: 700; }
+
+  h1.hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 4.5vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    margin-bottom: 22px;
+  }
+  h1.hero-title .accent-word { color: var(--accent); }
+
+  .hero-lead {
+    font-size: 16.5px;
+    line-height: 1.62;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 30px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 34px;
+  }
+  .mag-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 26px;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 700;
+    will-change: transform;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease;
+  }
+  .mag-btn.primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 10px 30px var(--accent-glow);
+  }
+  .mag-btn.primary:hover { background: #FF621F; }
+  .mag-btn.ghost {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+  }
+  .mag-btn.ghost:hover { border-color: var(--accent); background: var(--surface-2); }
+
+  .hero-specs-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .mini-stat-val {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .mini-stat-lbl {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* HARDWARE SYNTH DECK PANEL */
+  .synth-deck {
+    position: relative;
+    background: linear-gradient(160deg, #16161C 0%, #0D0D11 100%);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 26px;
+    padding: 22px;
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.72),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: background 0.45s ease, border-color 0.45s ease;
+  }
+  .synth-deck[data-chassis="raw"] {
+    background: linear-gradient(160deg, #27282D 0%, #17181C 100%);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+  .synth-deck[data-chassis="titanium"] {
+    background: linear-gradient(160deg, #1C1B22 0%, #0E0E13 100%);
+    border-color: rgba(255, 110, 48, 0.34);
+  }
+
+  .deck-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+  .deck-model {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .deck-model b { color: var(--text); }
+  .arp-btn {
+    height: 30px;
+    padding: 0 14px;
+    border-radius: 9999px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(255, 77, 0, 0.5);
+    color: #FF8E5C;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+  }
+  .arp-btn.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 18px var(--accent-glow);
+  }
+
+  .scope-box {
+    position: relative;
+    height: 176px;
+    border-radius: 16px;
+    background: #060608;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  #scopeCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .scope-hud {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+  }
+  .scope-hud b { color: var(--accent); }
+
+  /* JELLY SLIDERS (DesignBookmark Motion) */
+  .jelly-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin-bottom: 18px;
+  }
+  .jelly-control {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .jelly-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+  .jelly-head strong { color: var(--text); }
+  .jelly-track {
+    position: relative;
+    height: 28px;
+    border-radius: 10px;
+    background: #09090C;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    cursor: ew-resize;
+    touch-action: none;
+    transform-origin: center;
+    transition: transform 0.35s var(--ease-spring), border-color 0.2s ease;
+  }
+  .jelly-track:hover { border-color: rgba(255, 255, 255, 0.2); }
+  .jelly-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255, 77, 0, 0.38), var(--accent));
+    border-radius: 8px;
+    pointer-events: none;
+    transition: width 0.06s linear;
+  }
+  .jelly-cap {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    width: 4px;
+    border-radius: 4px;
+    background: #fff;
+    transform: translateX(-8px);
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  }
+
+  /* TACTILE SYNTH KEYS */
+  .pad-row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 7px;
+  }
+  .synth-pad {
+    height: 54px;
+    border-radius: 11px;
+    background: #1B1B22;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.14s var(--ease-spring), background 0.12s ease, border-color 0.12s ease, box-shadow 0.14s ease;
+  }
+  .synth-pad .pad-led {
+    width: 14px;
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+  .synth-pad:hover { border-color: rgba(255, 255, 255, 0.25); color: var(--text); }
+  .synth-pad.hit {
+    transform: scale(0.93) translateY(2px);
+    background: rgba(255, 77, 0, 0.22);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 18px var(--accent-glow);
+  }
+  .synth-pad.hit .pad-led { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* ================= SECTION HEADERS ================= */
+  section.block { padding: 88px 0; }
+  .sec-kicker {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .sec-title {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 3.3vw, 40px);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    margin-bottom: 16px;
+  }
+
+  /* ================= BENTO ENGINEERING GRID ================= */
+  .bento-grid {
+    margin-top: 38px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 18px;
+  }
+  .bento-card {
+    grid-column: span 4;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 220px;
+    transition: border-color 0.25s ease, transform 0.35s var(--ease-spring);
+  }
+  .bento-card.wide { grid-column: span 6; }
+  .bento-card:hover { border-color: rgba(255, 77, 0, 0.45); transform: translateY(-4px); }
+  .bento-idx {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .bento-card h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .bento-card p { font-size: 14px; line-height: 1.58; color: var(--muted); }
+
+  /* ================= CONFIGURATOR + SEGMENTED PILL + HOLD TO RESERVE ================= */
+  .config-panel {
+    margin-top: 36px;
+    background: linear-gradient(155deg, #131318 0%, #0C0C0F 100%);
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 28px;
+    padding: 36px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  /* Segmented Control with Spring Sliding Pill (DesignBookmark Motion) */
+  .seg-wrap {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 5px;
+    border-radius: 16px;
+    background: #09090C;
+    border: 1px solid var(--border);
+    margin: 22px 0 26px;
+  }
+  .seg-indicator {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    width: calc((100% - 10px) / 3);
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid rgba(255, 77, 0, 0.5);
+    box-shadow: 0 4px 18px rgba(255, 77, 0, 0.16);
+    transition: transform 0.45s var(--ease-spring);
+    pointer-events: none;
+  }
+  .seg-btn {
+    position: relative;
+    z-index: 1;
+    height: 48px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    transition: color 0.25s ease;
+  }
+  .seg-btn.active { color: var(--text); }
+
+  .addon-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .addon-chip {
+    padding: 13px 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.22s ease;
+  }
+  .addon-chip span.price { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+  .addon-chip.selected {
+    background: var(--accent-soft);
+    border-color: rgba(255, 77, 0, 0.55);
+    color: var(--text);
+  }
+
+  .summary-box {
+    background: #09090C;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .batch-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ok);
+  }
+  .total-price {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .summary-meta {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  /* HOLD TO RESERVE BUTTON (DesignBookmark Motion) */
+  .hold-btn {
+    position: relative;
+    height: 58px;
+    width: 100%;
+    border-radius: 16px;
+    background: #1A1A22;
+    border: 1px solid rgba(255, 77, 0, 0.55);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    user-select: none;
+    touch-action: none;
+    transition: transform 0.2s var(--ease-spring), border-color 0.2s ease;
+  }
+  .hold-btn.holding { transform: scale(0.97); }
+  .hold-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    background: linear-gradient(90deg, #D93B00, #FF550D);
+    pointer-events: none;
+  }
+  .hold-label { position: relative; z-index: 2; }
+  .hold-hint {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ================= NATIVE MODAL DIALOG (light-dismiss closedby="any") ================= */
+  dialog.modal {
+    margin: auto;
+    width: min(460px, calc(100vw - 28px));
+    padding: 30px;
+    border-radius: 24px;
+    background: #121217;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text);
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.85);
+  }
+  dialog.modal::backdrop {
+    background: rgba(4, 4, 8, 0.76);
+    backdrop-filter: blur(8px);
+  }
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+  .modal-head h3 { font-family: var(--font-display); font-size: 20px; }
+  .modal-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+  }
+  .modal-close:hover { background: var(--accent); color: #fff; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .field input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #09090C;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, transform 0.25s var(--ease-spring);
+  }
+  .field input:focus { border-color: var(--accent); transform: scale(1.01); }
+
+  /* LOADING TO SUCCESS BUTTON (DesignBookmark Motion) */
+  .submit-morph {
+    width: 100%;
+    height: 50px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.3s ease, transform 0.25s var(--ease-spring);
+  }
+  .submit-morph.loading { background: #2A2A35; pointer-events: none; }
+  .submit-morph.success { background: var(--ok); color: #051A10; }
+  .spin-ring {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .tg-note {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  footer.site-footer {
+    border-top: 1px solid var(--border);
+    padding: 34px 0 46px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ================= RESPONSIVE 375px+ ================= */
+  @media (max-width: 980px) {
+    .hero, .config-panel { grid-template-columns: 1fr; }
+    .bento-card, .bento-card.wide { grid-column: span 12; }
+    .back-link { top: auto; bottom: 16px; left: 16px; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px; }
+    .island-nav { display: none; }
+    .hero { padding: 98px 0 56px; gap: 28px; }
+    .jelly-grid, .addon-list { grid-template-columns: 1fr; }
+    .pad-row { grid-template-columns: repeat(4, 1fr); }
+    .config-panel { padding: 20px; gap: 24px; }
+    .hero-specs-strip { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .mini-stat-val { font-size: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="../index.html">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+  <span>Портфолио</span>
+</a>
+
+<!-- MORPH ISLAND -->
+<div class="island-shell">
+  <header class="morph-island" id="morphIsland">
+    <div class="brand-mark">
+      <span class="led-dot"></span>
+      <span>KURO // LAB</span>
+    </div>
+    <nav class="island-nav">
+      <a class="roll-link" href="#console"><span class="roll-inner"><span>Синтезатор</span><span>Синтезатор</span></span></a>
+      <a class="roll-link" href="#architecture"><span class="roll-inner"><span>Архитектура</span><span>Архитектура</span></span></a>
+      <a class="roll-link" href="#configurator"><span class="roll-inner"><span>Партия 01/50</span><span>Партия 01/50</span></span></a>
+    </nav>
+    <div class="island-status" id="islandStatus">ANALOG MONO · 118 BPM</div>
+    <button class="island-cta" id="openReserveTop">Бронь</button>
+  </header>
+</div>
+
+<main class="wrap">
+  <!-- HERO + LIVE WEB AUDIO SYNTHESIZER -->
+  <section class="hero" id="console">
+    <div class="hero-copy">
+      <div class="eyebrow">
+        <span>TOKYO × MOSCOW</span>
+        <strong>BATCH 01 // 50 UNITS</strong>
+      </div>
+      <h1 class="hero-title">
+        Аналоговый звук в корпусе из <span class="accent-word scramble" data-text="титана">титана</span>.
+      </h1>
+      <p class="hero-lead">
+        Собираем штучные полифонические синтезаторы и модульные аудиостанции вручную.
+        Попробуйте живой звук движка <strong>KURO-04</strong> прямо в браузере — нажмите клавиши или запустите арпеджиатор.
+      </p>
+      <div class="hero-actions">
+        <button class="mag-btn primary" id="heroPlayBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5.5v13l11-6.5z"/></svg>
+          <span>Слушать живой движок</span>
+        </button>
+        <a class="mag-btn ghost" href="#configurator">Собрать конфигурацию</a>
+      </div>
+      <div class="hero-specs-strip">
+        <div>
+          <div class="mini-stat-val scramble" data-text="4 × VCO">4 × VCO</div>
+          <div class="mini-stat-lbl">дискретные осцилляторы</div>
+        </div>
+        <div>
+          <div class="mini-stat-val scramble" data-text="24 dB">24 dB</div>
+          <div class="mini-stat-lbl">лестничный фильтр</div>
+        </div>
+        <div>
+          <div class="mini-stat-val scramble" data-text="0.8 ms">0.8 ms</div>
+          <div class="mini-stat-lbl">отклик CV/Gate и MIDI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERACTIVE SYNTH DECK -->
+    <div class="synth-deck" id="synthDeck" data-chassis="titanium">
+      <div class="deck-top-row">
+        <div class="deck-model">
+          <span>MODEL</span><b>KURO-04 // ANALOG ENGINE</b>
+        </div>
+        <button class="arp-btn" id="arpToggle">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
+          <span id="arpLabel">ARP: OFF</span>
+        </button>
+      </div>
+
+      <div class="scope-box">
+        <canvas id="scopeCanvas"></canvas>
+        <div class="scope-hud">
+          <span>OSC SCOPE // <b>LIVE AUDIO</b></span>
+          <span id="noteReadout">READY · CLICK PADS</span>
+        </div>
+      </div>
+
+      <!-- 4 JELLY SLIDERS -->
+      <div class="jelly-grid">
+        <div class="jelly-control">
+          <div class="jelly-head"><span>CUTOFF FREQ</span><strong id="valCutoff">1450 Hz</strong></div>
+          <div class="jelly-track" data-param="cutoff" data-min="160" data-max="5200" data-val="1450">
+            <div class="jelly-fill" style="width:26%"></div>
+            <div class="jelly-cap" style="left:26%"></div>
+          </div>
+        </div>
+        <div class="jelly-control">
+          <div class="jelly-head"><span>RESONANCE</span><strong id="valRes">6.4 Q</strong></div>
+          <div class="jelly-track" data-param="res" data-min="1" data-max="18" data-val="6.4">
+            <div class="jelly-fill" style="width:32%"></div>
+            <div class="jelly-cap" style="left:32%"></div>
+          </div>
+        </div>
+        <div class="jelly-control">
+          <div class="jelly-head"><span>TAPE DRIVE</span><strong id="valDrive">38%</strong></div>
+          <div class="jelly-track" data-param="drive" data-min="0" data-max="100" data-val="38">
+            <div class="jelly-fill" style="width:38%"></div>
+            <div class="jelly-cap" style="left:38%"></div>
+          </div>
+        </div>
+        <div class="jelly-control">
+          <div class="jelly-head"><span>DETUNE SUB</span><strong id="valDetune">14 ct</strong></div>
+          <div class="jelly-track" data-param="detune" data-min="0" data-max="40" data-val="14">
+            <div class="jelly-fill" style="width:35%"></div>
+            <div class="jelly-cap" style="left:35%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 TACTILE SYNTH PADS -->
+      <div class="pad-row" id="padRow">
+        <button class="synth-pad" data-note="C2" data-freq="65.41"><span class="pad-led"></span><b>C2</b></button>
+        <button class="synth-pad" data-note="D#2" data-freq="77.78"><span class="pad-led"></span><b>D#2</b></button>
+        <button class="synth-pad" data-note="F2" data-freq="87.31"><span class="pad-led"></span><b>F2</b></button>
+        <button class="synth-pad" data-note="G2" data-freq="98.00"><span class="pad-led"></span><b>G2</b></button>
+        <button class="synth-pad" data-note="A#2" data-freq="116.54"><span class="pad-led"></span><b>A#2</b></button>
+        <button class="synth-pad" data-note="C3" data-freq="130.81"><span class="pad-led"></span><b>C3</b></button>
+        <button class="synth-pad" data-note="D#3" data-freq="155.56"><span class="pad-led"></span><b>D#3</b></button>
+        <button class="synth-pad" data-note="G3" data-freq="196.00"><span class="pad-led"></span><b>G3</b></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENTO ARCHITECTURE -->
+  <section class="block" id="architecture">
+    <div class="sec-kicker">01 // ИНЖЕНЕРИЯ БЕЗ КОМПРОМИССОВ</div>
+    <h2 class="sec-title">Каждый экземпляр паяется и калибруется индивидуально.</h2>
+    <div class="bento-grid">
+      <article class="bento-card wide reveal">
+        <div class="bento-idx"><span>SPEC_01</span><span class="scramble" data-text="CNC GRADE-5">CNC GRADE-5</span></div>
+        <div>
+          <h3>Фрезерованное шасси из цельной плиты</h3>
+          <p>Никакого штампованного пластика. Корпус вытачивается на 5-осевом ЧПУ, пескоструится стеклянной дробью и получает индивидуальный лазерный серийный номер.</p>
+        </div>
+      </article>
+      <article class="bento-card wide reveal">
+        <div class="bento-idx"><span>SPEC_02</span><span class="scramble" data-text="PURE ANALOG">PURE ANALOG</span></div>
+        <div>
+          <h3>Дискретный тракт на подобранных транзисторах</h3>
+          <p>Нулевая цифровая эмуляция в цепи звука: тёплый насыщенный бас, самоосцилляция фильтра и фирменный аналоговый сатуратор Tape Drive на выходе.</p>
+        </div>
+      </article>
+      <article class="bento-card reveal">
+        <div class="bento-idx"><span>SPEC_03</span><span>HALL EFFECT</span></div>
+        <div>
+          <h3>Магнитные энкодеры</h3>
+          <p>Бесконтактные датчики Холла — ресурс 10 миллионов оборотов без хруста и люфта.</p>
+        </div>
+      </article>
+      <article class="bento-card reveal">
+        <div class="bento-idx"><span>SPEC_04</span><span>EURORACK I/O</span></div>
+        <div>
+          <h3>12 патч-точек CV/Gate</h3>
+          <p>Мгновенно интегрируется с любым модульным сетапом, Ableton, Bitwig и драм-машинами.</p>
+        </div>
+      </article>
+      <article class="bento-card reveal">
+        <div class="bento-idx"><span>SPEC_05</span><span>LIFETIME</span></div>
+        <div>
+          <h3>Пожизненный сервис</h3>
+          <p>Бесплатная калибровка, запасные колпачки и прямой чат с инженером, собиравшим ваш синтезатор.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONFIGURATOR + HOLD TO RESERVE -->
+  <section class="block" id="configurator">
+    <div class="sec-kicker">02 // КАСТОМНАЯ СБОРКА</div>
+    <h2 class="sec-title">Соберите свой KURO-04 из первой партии.</h2>
+
+    <div class="config-panel reveal">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">МАТЕРИАЛ ШАССИ (ПЕРЕКЛЮЧАЕТ ПРЕВЬЮ ВЫШЕ)</div>
+        <div class="seg-wrap" id="chassisSeg">
+          <div class="seg-indicator" id="segInd"></div>
+          <button class="seg-btn active" data-idx="0" data-chassis="titanium" data-price="118000">Титан Grade 5</button>
+          <button class="seg-btn" data-idx="1" data-chassis="graphite" data-price="94000">Графит-Мат</button>
+          <button class="seg-btn" data-idx="2" data-chassis="raw" data-price="104000">Сырой алюминий</button>
+        </div>
+
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);margin-bottom:12px">ДОПОЛНИТЕЛЬНЫЕ МОДУЛИ</div>
+        <div class="addon-list" id="addonList">
+          <button class="addon-chip selected" data-price="14000" data-name="Пружинный реверб">
+            <span>Пружинный реверб</span><span class="price">+14 000 ₽</span>
+          </button>
+          <button class="addon-chip" data-price="11000" data-name="Кейс Pelican CNC">
+            <span>Кейс Pelican CNC</span><span class="price">+11 000 ₽</span>
+          </button>
+          <button class="addon-chip" data-price="9500" data-name="Гравировка имени">
+            <span>Гравировка имени</span><span class="price">+9 500 ₽</span>
+          </button>
+          <button class="addon-chip" data-price="16000" data-name="Пак патч-кабелей">
+            <span>Патч-набор Eurorack</span><span class="price">+16 000 ₽</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <div class="batch-tag">
+          <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>
+          <span>СВОБОДНО 7 ИЗ 50 НОМЕРОВ · СРОК 14 ДНЕЙ</span>
+        </div>
+        <div class="total-price" id="totalPrice">132 000 ₽</div>
+        <p class="summary-meta" id="summaryMeta">Шасси: Титан Grade 5 · Опции: Пружинный реверб</p>
+
+        <!-- HOLD TO RESERVE (DesignBookmark Motion) -->
+        <button class="hold-btn" id="holdReserveBtn" aria-label="Удерживайте для бронирования серийного номера">
+          <span class="hold-fill" id="holdFill"></span>
+          <span class="hold-label" id="holdLabel">Удерживайте для брони № 07/50</span>
+        </button>
+        <div class="hold-hint">Нажмите и удерживайте 1 секунду (или кликните «Бронь» сверху)</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <span>KURO // LAB · DEMO CONCEPT 01</span>
+    <span>GSAP ScrollTrigger · Lenis · Web Audio · DesignBookmark Motion Stack</span>
+  </footer>
+</main>
+
+<!-- NATIVE LIGHT-DISMISS MODAL DIALOG -->
+<dialog class="modal" id="orderModal" closedby="any" aria-labelledby="modalTitle">
+  <div class="modal-head">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);margin-bottom:4px">RESERVE // BATCH 01</div>
+      <h3 id="modalTitle">Бронь KURO-04 № 07/50</h3>
+    </div>
+    <button class="modal-close" type="button" id="closeModalBtn" aria-label="Закрыть">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <form id="orderForm">
+    <div class="field">
+      <label for="fName">ИМЯ / СТУДИЯ</label>
+      <input id="fName" name="name" required placeholder="Алексей / Modular Room">
+    </div>
+    <div class="field">
+      <label for="fContact">TELEGRAM ИЛИ ТЕЛЕФОН</label>
+      <input id="fContact" name="contact" required placeholder="@username или +7 999 ...">
+    </div>
+    <button class="submit-morph" type="submit" id="submitBtn">Зафиксировать номер в Telegram</button>
+    <div class="tg-note" id="tgNote">Конфигурация прикрепится автоматически</div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  // === ЕДИНЫЙ КОНФИГ TELEGRAM BOT API (вставьте токен и chat_id для боевых заявок) ===
+  const TELEGRAM_CONFIG = {
+    BOT_TOKEN: "", // например: "123456:ABC-DEF..."
+    CHAT_ID: ""    // например: "987654321"
+  };
+
+  // --- Lenis Smooth Scroll + GSAP ScrollTrigger ---
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced && window.Lenis) {
+    const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+    lenis.on("scroll", () => { if (window.ScrollTrigger) ScrollTrigger.update(); });
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray(".reveal").forEach((el, i) => {
+      gsap.from(el, {
+        y: 34, opacity: 0, duration: 0.85, ease: "power3.out",
+        delay: (i % 3) * 0.08,
+        scrollTrigger: { trigger: el, start: "top 86%" }
+      });
+    });
+  }
+
+  // --- Scramble Text Effect (DesignBookmark Motion) ---
+  const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/#*";
+  function runScramble(el) {
+    const target = el.dataset.text || el.textContent;
+    let frame = 0;
+    const total = 18;
+    clearInterval(el._scrTimer);
+    el._scrTimer = setInterval(() => {
+      frame++;
+      el.textContent = target.split("").map((ch, idx) => {
+        if (ch === " ") return " ";
+        if (idx < (frame / total) * target.length) return ch;
+        return CHARS[Math.floor(Math.random() * CHARS.length)];
+      }).join("");
+      if (frame >= total) { el.textContent = target; clearInterval(el._scrTimer); }
+    }, 28);
+  }
+  document.querySelectorAll(".scramble").forEach((el) => {
+    el.addEventListener("mouseenter", () => runScramble(el));
+    if (!prefersReduced) setTimeout(() => runScramble(el), 350);
+  });
+
+  // --- Magnetic Buttons (DesignBookmark Motion) ---
+  if (!prefersReduced) {
+    document.querySelectorAll(".mag-btn").forEach((btn) => {
+      btn.addEventListener("mousemove", (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) * 0.24;
+        const dy = (e.clientY - (r.top + r.height / 2)) * 0.28;
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.transform = "translate(0, 0)";
+      });
+    });
+  }
+
+  // --- Web Audio API Live Analog Synth + 60fps Canvas Oscilloscope ---
+  const synthState = { cutoff: 1450, res: 6.4, drive: 38, detune: 14 };
+  let audioCtx = null, analyser = null, arpTimer = null, arpIdx = 0;
+  const morphIsland = document.getElementById("morphIsland");
+  const islandStatus = document.getElementById("islandStatus");
+  const noteReadout = document.getElementById("noteReadout");
+  const pads = [...document.querySelectorAll(".synth-pad")];
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.connect(audioCtx.destination);
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+  }
+
+  function makeDistortionCurve(amount) {
+    const k = amount * 1.4;
+    const n = 256, curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (i * 2) / n - 1;
+      curve[i] = k === 0 ? x : ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
+    }
+    return curve;
+  }
+
+  function triggerNote(freq, label, padEl) {
+    ensureAudio();
+    const now = audioCtx.currentTime;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const filter = audioCtx.createBiquadFilter();
+    const shaper = audioCtx.createWaveShaper();
+    const gain = audioCtx.createGain();
+
+    osc1.type = "sawtooth";
+    osc2.type = "square";
+    osc1.frequency.setValueAtTime(freq, now);
+    osc2.frequency.setValueAtTime(freq * 0.5, now);
+    osc2.detune.setValueAtTime(synthState.detune, now);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(Math.min(7000, synthState.cutoff * 2.1), now);
+    filter.frequency.exponentialRampToValueAtTime(Math.max(120, synthState.cutoff), now + 0.28);
+    filter.Q.setValueAtTime(synthState.res, now);
+
+    shaper.curve = makeDistortionCurve(synthState.drive);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.26, now + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
+
+    osc1.connect(filter); osc2.connect(filter);
+    filter.connect(shaper); shaper.connect(gain); gain.connect(analyser);
+
+    osc1.start(now); osc2.start(now);
+    osc1.stop(now + 0.55); osc2.stop(now + 0.55);
+
+    noteReadout.textContent = `NOTE ${label} · ${Math.round(freq)} Hz`;
+    islandStatus.textContent = `LIVE ${label} · ${Math.round(synthState.cutoff)} Hz`;
+    morphIsland.classList.add("expanded", "playing");
+
+    if (padEl) {
+      padEl.classList.add("hit");
+      setTimeout(() => padEl.classList.remove("hit"), 180);
+    }
+  }
+
+  pads.forEach((p) => {
+    p.addEventListener("pointerdown", () => triggerNote(parseFloat(p.dataset.freq), p.dataset.note, p));
+  });
+
+  const arpToggle = document.getElementById("arpToggle");
+  const arpLabel = document.getElementById("arpLabel");
+  const arpPattern = [0, 2, 3, 5, 7, 5, 4, 2];
+
+  function setArp(on) {
+    if (on && !arpTimer) {
+      arpToggle.classList.add("active");
+      arpLabel.textContent = "ARP: 118 BPM";
+      const step = () => {
+        const pad = pads[arpPattern[arpIdx % arpPattern.length]];
+        triggerNote(parseFloat(pad.dataset.freq), pad.dataset.note, pad);
+        arpIdx++;
+      };
+      step();
+      arpTimer = setInterval(step, 254);
+    } else if (!on && arpTimer) {
+      clearInterval(arpTimer);
+      arpTimer = null;
+      arpToggle.classList.remove("active");
+      arpLabel.textContent = "ARP: OFF";
+      morphIsland.classList.remove("playing");
+    }
+  }
+  arpToggle.addEventListener("click", () => setArp(!arpTimer));
+  document.getElementById("heroPlayBtn").addEventListener("click", () => setArp(!arpTimer));
+
+  // --- Jelly Sliders with Elastic Squash/Stretch (DesignBookmark Motion) ---
+  document.querySelectorAll(".jelly-track").forEach((track) => {
+    const param = track.dataset.param;
+    const min = parseFloat(track.dataset.min);
+    const max = parseFloat(track.dataset.max);
+    const fill = track.querySelector(".jelly-fill");
+    const cap = track.querySelector(".jelly-cap");
+    let dragging = false, lastX = 0;
+
+    function updateFromClientX(clientX) {
+      const r = track.getBoundingClientRect();
+      const frac = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      const val = min + frac * (max - min);
+      synthState[param] = val;
+      fill.style.width = `${frac * 100}%`;
+      cap.style.left = `${frac * 100}%`;
+      if (param === "cutoff") document.getElementById("valCutoff").textContent = `${Math.round(val)} Hz`;
+      if (param === "res") document.getElementById("valRes").textContent = `${val.toFixed(1)} Q`;
+      if (param === "drive") document.getElementById("valDrive").textContent = `${Math.round(val)}%`;
+      if (param === "detune") document.getElementById("valDetune").textContent = `${Math.round(val)} ct`;
+
+      // Elastic jelly skew & scale proportional to drag velocity
+      const vel = Math.max(-14, Math.min(14, clientX - lastX));
+      lastX = clientX;
+      track.style.transform = `scaleX(${1 + Math.abs(vel) * 0.004}) scaleY(${1 - Math.abs(vel) * 0.006}) skewX(${-vel * 0.55}deg)`;
+    }
+
+    track.addEventListener("pointerdown", (e) => {
+      dragging = true;
+      lastX = e.clientX;
+      track.setPointerCapture(e.pointerId);
+      updateFromClientX(e.clientX);
+    });
+    track.addEventListener("pointermove", (e) => { if (dragging) updateFromClientX(e.clientX); });
+    const release = () => { dragging = false; track.style.transform = "scaleX(1) scaleY(1) skewX(0deg)"; };
+    track.addEventListener("pointerup", release);
+    track.addEventListener("pointercancel", release);
+  });
+
+  // --- 60fps Oscilloscope Canvas ---
+  const sc = document.getElementById("scopeCanvas");
+  const sctx = sc.getContext("2d");
+  function resizeScope() {
+    const r = sc.getBoundingClientRect();
+    sc.width = Math.max(300, Math.round(r.width * Math.min(window.devicePixelRatio || 1, 2)));
+    sc.height = Math.max(120, Math.round(r.height * Math.min(window.devicePixelRatio || 1, 2)));
+  }
+  resizeScope();
+  window.addEventListener("resize", resizeScope);
+
+  let idlePhase = 0;
+  function drawScope() {
+    const w = sc.width, h = sc.height;
+    sctx.fillStyle = "rgba(6, 6, 8, 0.34)";
+    sctx.fillRect(0, 0, w, h);
+
+    // Grid centerline
+    sctx.strokeStyle = "rgba(255,255,255,0.06)";
+    sctx.lineWidth = 1;
+    sctx.beginPath();
+    sctx.moveTo(0, h / 2); sctx.lineTo(w, h / 2);
+    sctx.stroke();
+
+    sctx.beginPath();
+    sctx.lineWidth = 2.4;
+    sctx.strokeStyle = "#FF4D00";
+    sctx.shadowColor = "rgba(255,77,0,0.75)";
+    sctx.shadowBlur = 12;
+
+    if (analyser) {
+      const buf = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteTimeDomainData(buf);
+      for (let i = 0; i < buf.length; i++) {
+        const x = (i / (buf.length - 1)) * w;
+        const y = ((buf[i] - 128) / 128) * (h * 0.42) + h / 2;
+        if (i === 0) sctx.moveTo(x, y); else sctx.lineTo(x, y);
+      }
+    } else {
+      idlePhase += 0.04;
+      const freqMod = 2 + (synthState.cutoff / 2200);
+      for (let x = 0; x <= w; x += 4) {
+        const nx = x / w;
+        const env = Math.sin(nx * Math.PI);
+        const y = h / 2 + Math.sin(nx * Math.PI * 2 * freqMod + idlePhase) * (h * 0.24) * env;
+        if (x === 0) sctx.moveTo(x, y); else sctx.lineTo(x, y);
+      }
+    }
+    sctx.stroke();
+    sctx.shadowBlur = 0;
+    requestAnimationFrame(drawScope);
+  }
+  drawScope();
+
+  // --- Segmented Control + Price Calculator ---
+  let basePrice = 118000, chassisName = "Титан Grade 5";
+  const segInd = document.getElementById("segInd");
+  const synthDeck = document.getElementById("synthDeck");
+  const segBtns = [...document.querySelectorAll(".seg-btn")];
+  const addonBtns = [...document.querySelectorAll(".addon-chip")];
+
+  function recalc() {
+    let total = basePrice;
+    const chosen = [];
+    addonBtns.forEach((b) => {
+      if (b.classList.contains("selected")) {
+        total += parseInt(b.dataset.price, 10);
+        chosen.push(b.dataset.name);
+      }
+    });
+    document.getElementById("totalPrice").textContent = total.toLocaleString("ru-RU") + " ₽";
+    document.getElementById("summaryMeta").textContent =
+      `Шасси: ${chassisName} · Опции: ${chosen.length ? chosen.join(", ") : "Базовая комплектация"}`;
+  }
+
+  segBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      segBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      segInd.style.transform = `translateX(${parseInt(btn.dataset.idx, 10) * 100}%)`;
+      basePrice = parseInt(btn.dataset.price, 10);
+      chassisName = btn.textContent.trim();
+      synthDeck.dataset.chassis = btn.dataset.chassis;
+      recalc();
+    });
+  });
+
+  addonBtns.forEach((btn) => {
+    btn.addEventListener("click", () => { btn.classList.toggle("selected"); recalc(); });
+  });
+
+  // --- Hold to Reserve Interaction (DesignBookmark Motion) ---
+  const holdBtn = document.getElementById("holdReserveBtn");
+  const holdFill = document.getElementById("holdFill");
+  const holdLabel = document.getElementById("holdLabel");
+  const modal = document.getElementById("orderModal");
+  let holdRaf = null, holdStart = 0;
+
+  function openOrderModal() { modal.showModal(); }
+  document.getElementById("openReserveTop").addEventListener("click", openOrderModal);
+  document.getElementById("closeModalBtn").addEventListener("click", () => modal.close());
+
+  // Fallback for browsers without native dialog closedby="any"
+  if (!("closedBy" in HTMLDialogElement.prototype)) {
+    modal.addEventListener("click", (e) => {
+      if (e.target !== modal) return;
+      const r = modal.getBoundingClientRect();
+      const inside = r.top <= e.clientY && e.clientY <= r.bottom && r.left <= e.clientX && e.clientX <= r.right;
+      if (!inside) modal.close();
+    });
+  }
+
+  function startHold(e) {
+    e.preventDefault();
+    holdStart = performance.now();
+    holdBtn.classList.add("holding");
+    holdLabel.textContent = "Удерживайте...";
+    const tick = (now) => {
+      const p = Math.min(1, (now - holdStart) / 1000);
+      holdFill.style.width = `${p * 100}%`;
+      if (p >= 1) {
+        cancelHold(true);
+        openOrderModal();
+        return;
+      }
+      holdRaf = requestAnimationFrame(tick);
+    };
+    holdRaf = requestAnimationFrame(tick);
+  }
+  function cancelHold(completed) {
+    if (holdRaf) cancelAnimationFrame(holdRaf);
+    holdRaf = null;
+    holdBtn.classList.remove("holding");
+    holdFill.style.width = completed ? "100%" : "0%";
+    holdLabel.textContent = completed ? "Номер 07/50 зарезервирован!" : "Удерживайте для брони № 07/50";
+    if (completed) setTimeout(() => { holdFill.style.width = "0%"; holdLabel.textContent = "Удерживайте для брони № 07/50"; }, 1800);
+  }
+  holdBtn.addEventListener("pointerdown", startHold);
+  holdBtn.addEventListener("pointerup", () => { if (holdRaf) cancelHold(false); });
+  holdBtn.addEventListener("pointerleave", () => { if (holdRaf) cancelHold(false); });
+
+  // --- Loading to Success Form Submission + Telegram Bot API ---
+  const submitBtn = document.getElementById("submitBtn");
+  const tgNote = document.getElementById("tgNote");
+  document.getElementById("orderForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("fName").value.trim();
+    const contact = document.getElementById("fContact").value.trim();
+    const summary = document.getElementById("summaryMeta").textContent;
+    const price = document.getElementById("totalPrice").textContent;
+
+    submitBtn.classList.add("loading");
+    submitBtn.innerHTML = `<span class="spin-ring"></span><span>Отправка в Telegram...</span>`;
+
+    const msg = `KURO // LAB — Бронь №07/50\nИмя: ${name}\nКонтакт: ${contact}\n${summary}\nИтого: ${price}`;
+    try {
+      if (TELEGRAM_CONFIG.BOT_TOKEN && TELEGRAM_CONFIG.CHAT_ID) {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.CHAT_ID, text: msg })
+        });
+        tgNote.textContent = "Заявка мгновенно доставлена в Telegram!";
+      } else {
+        await new Promise((r) => setTimeout(r, 650));
+        tgNote.textContent = "Демо-режим: впишите BOT_TOKEN и CHAT_ID вверху скрипта.";
+      }
+      submitBtn.classList.remove("loading");
+      submitBtn.classList.add("success");
+      submitBtn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg><span>Бронь подтверждена</span>`;
+      setTimeout(() => {
+        modal.close();
+        submitBtn.classList.remove("success");
+        submitBtn.textContent = "Зафиксировать номер в Telegram";
+      }, 1500);
+    } catch (_) {
+      submitBtn.classList.remove("loading");
+      submitBtn.textContent = "Повторить отправку";
+    }
+  });
+</script>
+</body>
+</html>

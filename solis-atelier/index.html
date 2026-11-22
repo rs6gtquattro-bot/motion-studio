@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>SOLIS // NOCTURNE — Секретный ночной спекизи-бар и лаборатория вкуса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E0B09;
+    --surface: #17120F;
+    --surface-2: #211A15;
+    --ivory: #F4EFE6;
+    --muted: #A49889;
+    --brass: #D4A85F;
+    --brass-soft: rgba(212, 168, 95, 0.16);
+    --wine: #6B1F2A;
+    --border: rgba(244, 239, 230, 0.11);
+    --font-serif: "Cormorant Garamond", Georgia, serif;
+    --font-sans: "Manrope", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --ease-spring: cubic-bezier(0.22, 1.3, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); color: var(--ivory); font-family: var(--font-sans); }
+  body { background: var(--bg); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+  /* ================= EDITORIAL HEADER ================= */
+  header.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 70;
+    padding: 20px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(14,11,9,0.94) 0%, rgba(14,11,9,0.68) 65%, transparent 100%);
+    contain: layout style;
+  }
+  .top-left { display: flex; align-items: center; gap: 18px; }
+  .back-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    padding: 7px 13px;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    transition: all 0.25s ease;
+  }
+  .back-pill:hover { color: var(--ivory); border-color: var(--brass); }
+  .logo-serif {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+  }
+  .logo-serif span { color: var(--brass); font-style: italic; }
+
+  nav.ed-nav { display: flex; align-items: center; gap: 24px; }
+  .roll-link {
+    display: inline-flex;
+    height: 22px;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .roll-link:hover { color: var(--ivory); }
+  .roll-stack { display: flex; flex-direction: column; line-height: 22px; }
+  .roll-stack span { display: block; transition: transform 0.38s var(--ease-spring); }
+  .roll-link:hover .roll-stack span { transform: translateY(-100%); }
+
+  .reserve-btn {
+    padding: 10px 22px;
+    border-radius: 9999px;
+    border: 1px solid var(--brass);
+    background: rgba(212, 168, 95, 0.10);
+    color: var(--brass);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.28s var(--ease-spring);
+  }
+  .reserve-btn:hover { background: var(--brass); color: #120D08; transform: translateY(-1px); }
+
+  /* ================= FULLBLEED HERO (GPU-COMPOSITED PARALLAX) ================= */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 140px 44px 72px;
+    overflow: hidden;
+    contain: layout paint;
+  }
+  .hero-bg-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .hero-bg {
+    width: 100%;
+    height: 112%;
+    object-fit: cover;
+    transform-origin: center;
+    will-change: transform;
+  }
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(14,11,9,0.68) 0%, rgba(14,11,9,0.44) 44%, rgba(14,11,9,0.97) 100%),
+      radial-gradient(ellipse 65% 55% at 62% 45%, rgba(212,168,95,0.10), transparent 72%);
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 3;
+    max-width: 1260px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 40px;
+    align-items: end;
+  }
+  .ed-kicker {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 18px;
+  }
+
+  /* WEIGHT WAVE + WORD ROLL (DesignBookmark Motion) */
+  .hero-display {
+    font-family: var(--font-serif);
+    font-size: clamp(46px, 6.8vw, 94px);
+    line-height: 0.96;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+  .hero-display em { color: var(--brass); font-style: italic; }
+
+  .weight-wave-line {
+    font-family: var(--font-sans);
+    font-size: clamp(18px, 2.2vw, 26px);
+    letter-spacing: 0.02em;
+    color: var(--ivory);
+    margin-bottom: 22px;
+    display: inline-block;
+    cursor: default;
+  }
+  .ww-char {
+    display: inline-block;
+    font-weight: 400;
+    transform-origin: center bottom;
+    transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), color 0.16s ease, opacity 0.16s ease;
+    opacity: 0.86;
+  }
+
+  .word-roll-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .word-roll-window {
+    height: 22px;
+    overflow: hidden;
+    display: inline-block;
+    color: var(--brass);
+    font-weight: 600;
+  }
+  .word-roll-track {
+    display: flex;
+    flex-direction: column;
+    line-height: 22px;
+    transition: transform 0.65s var(--ease-spring);
+  }
+
+  .hero-right-note {
+    padding: 24px 26px;
+    border-radius: 18px;
+    background: rgba(21, 16, 13, 0.90);
+    border: 1px solid rgba(244, 239, 230, 0.14);
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+  }
+  .hero-right-note p { font-size: 14.5px; line-height: 1.65; color: var(--muted); margin-bottom: 18px; }
+
+  /* COPY PASSWORD BUTTON (DesignBookmark Motion) */
+  .copy-pass-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 10px 16px;
+    border-radius: 12px;
+    background: rgba(14, 11, 9, 0.85);
+    border: 1px solid rgba(212, 168, 95, 0.32);
+  }
+  .copy-pass-code { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.14em; color: var(--brass); }
+  .copy-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 9px;
+    background: var(--brass-soft);
+    color: var(--brass);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s var(--ease-spring);
+  }
+  .copy-btn.copied { background: #2D6A4F; color: #E8FFF2; transform: scale(1.04); }
+
+  /* ================= READ ALONG MANIFESTO (DesignBookmark Motion + ScrollTrigger) ================= */
+  .manifesto-sec {
+    padding: 120px 36px;
+    max-width: 1080px;
+    margin: 0 auto;
+    contain: layout paint;
+  }
+  .read-along {
+    font-family: var(--font-serif);
+    font-size: clamp(30px, 4.3vw, 54px);
+    line-height: 1.24;
+    font-weight: 400;
+  }
+  .ra-word {
+    display: inline-block;
+    margin-right: 0.22em;
+    color: rgba(244, 239, 230, 0.16);
+    transition: color 0.22s ease;
+  }
+  .ra-word.lit { color: var(--ivory); }
+  .ra-word.gold.lit { color: var(--brass); font-style: italic; }
+
+  /* ================= HORIZONTAL PINNED GALLERY (GSAP ScrollTrigger) ================= */
+  .horiz-section {
+    position: relative;
+    overflow: hidden;
+    padding: 64px 0 88px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #130F0C 0%, #0E0B09 100%);
+    contain: layout paint;
+  }
+  .horiz-head {
+    max-width: 1260px;
+    margin: 0 auto 38px;
+    padding: 0 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .horiz-head h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+  }
+  .horiz-track {
+    display: flex;
+    gap: 28px;
+    padding: 0 36px;
+    width: max-content;
+    will-change: transform;
+  }
+  .drink-card {
+    width: 390px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+    contain: layout paint;
+  }
+  .drink-card:hover { border-color: rgba(212, 168, 95, 0.5); }
+  .drink-media {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+  }
+  .drink-media--citrus::after,
+  .drink-media--noir::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .drink-media--citrus::after { background: linear-gradient(150deg, rgba(212,168,95,0.22), rgba(20,14,9,0.24)); }
+  .drink-media--noir::after { background: linear-gradient(160deg, rgba(14,11,9,0.34), rgba(107,31,42,0.20)); }
+  .drink-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .drink-card:hover .drink-media img { transform: scale(1.05); }
+  .drink-num {
+    position: absolute;
+    top: 14px; left: 14px;
+    z-index: 2;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    background: rgba(14,11,9,0.88);
+    border: 1px solid rgba(212,168,95,0.45);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--brass);
+  }
+  .drink-body { padding: 22px 24px 26px; }
+  .drink-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .drink-body h3 { font-family: var(--font-serif); font-size: 28px; font-weight: 600; }
+  .drink-price { font-family: var(--font-mono); font-size: 13px; color: var(--brass); }
+  .drink-body p { font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+
+  /* ================= FAN CARDS + 3D PARALLAX TICKET (DesignBookmark Motion) ================= */
+  .pass-section {
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 110px 36px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+    contain: layout paint;
+  }
+
+  /* Fan Cards Deck */
+  .fan-stage {
+    position: relative;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 26px;
+  }
+  .fan-card {
+    position: absolute;
+    width: 240px;
+    height: 300px;
+    border-radius: 20px;
+    padding: 22px;
+    background: linear-gradient(155deg, #241C16 0%, #130F0C 100%);
+    border: 1px solid rgba(212, 168, 95, 0.28);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.55s var(--ease-spring), border-color 0.25s ease;
+    cursor: pointer;
+  }
+  .fan-card:nth-child(1) { transform: rotate(-10deg) translateX(-48px) translateY(10px); z-index: 1; }
+  .fan-card:nth-child(2) { transform: rotate(0deg) translateY(-4px); z-index: 2; border-color: rgba(212, 168, 95, 0.52); }
+  .fan-card:nth-child(3) { transform: rotate(10deg) translateX(48px) translateY(10px); z-index: 1; }
+  .fan-stage:hover .fan-card:nth-child(1) { transform: rotate(-18deg) translateX(-115px) translateY(20px); }
+  .fan-stage:hover .fan-card:nth-child(2) { transform: rotate(0deg) translateY(-18px) scale(1.04); z-index: 4; }
+  .fan-stage:hover .fan-card:nth-child(3) { transform: rotate(18deg) translateX(115px) translateY(20px); }
+  .fan-card h4 { font-family: var(--font-serif); font-size: 26px; color: var(--ivory); margin-bottom: 6px; }
+  .fan-card p { font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+  .fan-tag { font-family: var(--font-mono); font-size: 10.5px; color: var(--brass); letter-spacing: 0.14em; }
+
+  /* 3D PARALLAX TICKET */
+  .ticket-scene { perspective: 1100px; }
+  .parallax-ticket {
+    position: relative;
+    border-radius: 24px;
+    padding: 32px;
+    background: linear-gradient(135deg, #251B14 0%, #120D0A 55%, #231618 100%);
+    border: 1px solid rgba(212, 168, 95, 0.52);
+    box-shadow: 0 30px 64px rgba(0, 0, 0, 0.68);
+    transform-style: preserve-3d;
+    transition: transform 0.16s ease-out;
+    overflow: hidden;
+  }
+  .ticket-glare {
+    position: absolute;
+    top: -160px;
+    left: -160px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244, 212, 148, 0.24) 0%, transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    transform: translate3d(50%, 50%, 0);
+  }
+  .ticket-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed rgba(212, 168, 95, 0.32);
+    margin-bottom: 22px;
+  }
+  .ticket-brand { font-family: var(--font-serif); font-size: 28px; letter-spacing: 0.12em; }
+  .ticket-serial { font-family: var(--font-mono); font-size: 12px; color: var(--brass); }
+  .ticket-guest-name {
+    font-family: var(--font-serif);
+    font-size: 34px;
+    font-style: italic;
+    color: var(--ivory);
+    margin: 8px 0 18px;
+  }
+  .ticket-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .ticket-meta-grid span { display: block; color: var(--muted); margin-bottom: 4px; font-size: 10px; }
+  .ticket-input-row {
+    display: flex;
+    gap: 10px;
+  }
+  .ticket-input-row input {
+    flex: 1;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: rgba(10, 8, 6, 0.75);
+    border: 1px solid var(--border);
+    color: var(--ivory);
+    font-size: 13.5px;
+    outline: none;
+  }
+  .ticket-input-row input:focus { border-color: var(--brass); }
+  .ticket-btn {
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 12px;
+    background: var(--brass);
+    color: #120D08;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  /* MODAL DIALOG */
+  dialog.modal {
+    margin: auto;
+    width: min(440px, calc(100vw - 28px));
+    padding: 30px;
+    border-radius: 22px;
+    background: #17120F;
+    border: 1px solid rgba(212, 168, 95, 0.38);
+    color: var(--ivory);
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.85);
+  }
+  dialog.modal::backdrop { background: rgba(6, 4, 3, 0.84); }
+  .m-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .m-head h3 { font-family: var(--font-serif); font-size: 30px; font-weight: 600; }
+  .m-close { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); color: var(--muted); }
+  .m-field { margin-bottom: 13px; }
+  .m-field label { display: block; font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); margin-bottom: 5px; }
+  .m-field input, .m-field select {
+    width: 100%; height: 44px; padding: 0 13px; border-radius: 11px;
+    background: #0E0B09; border: 1px solid var(--border); color: var(--ivory); font-size: 14px; outline: none;
+  }
+  .m-submit {
+    width: 100%; height: 48px; border-radius: 12px; background: var(--brass); color: #120D08;
+    font-size: 14px; font-weight: 800; margin-top: 6px;
+  }
+  .m-note { margin-top: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-align: center; }
+
+  footer.ed-foot {
+    border-top: 1px solid var(--border);
+    padding: 30px 36px 42px;
+    max-width: 1260px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 960px) {
+    .hero-inner, .pass-section { grid-template-columns: 1fr; }
+    nav.ed-nav { display: none; }
+    .hero { padding: 120px 20px 56px; }
+    .manifesto-sec, .pass-section { padding: 72px 20px; }
+    .horiz-head { padding: 0 20px; flex-direction: column; align-items: flex-start; }
+    .horiz-track { padding: 0 20px; overflow-x: auto; width: 100%; }
+    .drink-card { width: 300px; }
+    header.topbar { padding: 16px 18px; }
+    .fan-stage:hover .fan-card:nth-child(1) { transform: rotate(-12deg) translateX(-44px); }
+    .fan-stage:hover .fan-card:nth-child(3) { transform: rotate(12deg) translateX(44px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="top-left">
+    <a class="back-pill" href="../index.html">&larr; Портфолио</a>
+    <div class="logo-serif">SOLIS <span>Nocturne</span></div>
+  </div>
+  <nav class="ed-nav">
+    <a class="roll-link" href="#manifesto"><span class="roll-stack"><span>Философия</span><span>Философия</span></span></a>
+    <a class="roll-link" href="#menu"><span class="roll-stack"><span>Карта ночи</span><span>Карта ночи</span></span></a>
+    <a class="roll-link" href="#pass"><span class="roll-stack"><span>Пропуск</span><span>Пропуск</span></span></a>
+  </nav>
+  <button class="reserve-btn" id="openBookBtn">Запросить стол</button>
+</header>
+
+<section class="hero">
+  <div class="hero-bg-wrap" id="heroBgWrap">
+    <img class="hero-bg" id="heroBg" src="../assets/solis-hero.jpg" decoding="async" fetchpriority="high" alt="Интерьер ночного спекизи-бара SOLIS Nocturne">
+  </div>
+  <div class="hero-scrim"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="ed-kicker">PATRIARSHIE · CH. 04 · 21:00 — 04:00</div>
+      <h1 class="hero-display">Алхимия <em>ночи</em><br>за дверью без вывески.</h1>
+      <div class="weight-wave-line" id="weightWave">Лаборатория редких дистиллятов и ботанического льда</div>
+      <div class="word-roll-badge">
+        <span>СЕГОДНЯ В БОКАЛЕ:</span>
+        <span class="word-roll-window">
+          <span class="word-roll-track" id="wordRollTrack">
+            <span>ДЫМНЫЙ НЕГРОНИ НА КЕДРЕ</span>
+            <span>РУБИНОВЫЙ ГИБИСКУС × БЕРГАМОТ</span>
+            <span>ЧЁРНЫЙ ТРЮФЕЛЬ OLD FASHIONED</span>
+            <span>ЮДЗУ × КОПЧЁНАЯ ГРУША</span>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <div class="hero-right-note">
+      <p>Вход строго по цифровому пропуску и еженедельному паролю. Внутри 24 посадочных места, виниловый звук и четыре авторских акта.</p>
+      <div class="copy-pass-row">
+        <span class="copy-pass-code">CODE: SOLIS-04</span>
+        <button class="copy-btn" id="copyPassBtn" type="button">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyLbl">Скопировать</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- READ ALONG SCROLL MANIFESTO -->
+<section class="manifesto-sec" id="manifesto">
+  <div class="ed-kicker">01 // МАНИФЕСТ ТИШИНЫ</div>
+  <p class="read-along" id="readAlongText">
+    Мы не включаем клубный бит и не спешим со счётом. Каждый напиток здесь проходит через вакуумную дистилляцию, вручную вырезанный хрустальный лёд и три минуты тишины, чтобы вечер наконец замедлился.
+  </p>
+</section>
+
+<!-- HORIZONTAL PINNED GALLERY (GSAP ScrollTrigger) -->
+<section class="horiz-section" id="menu">
+  <div class="horiz-head">
+    <div>
+      <div class="ed-kicker">02 // СЕЗОННАЯ КОЛЛЕКЦИЯ</div>
+      <h2>Четыре акта ночной карты</h2>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">ПРОКРУЧИВАЙТЕ ВНИЗ &rarr; ГАЛЕРЕЯ ДВИЖЕТСЯ ГОРИЗОНТАЛЬНО</div>
+  </div>
+
+  <div class="horiz-track" id="horizTrack">
+    <article class="drink-card">
+      <div class="drink-media">
+        <img src="../assets/solis-glass.jpg" loading="lazy" decoding="async" alt="Акт I — Crimson Ember">
+        <span class="drink-num">ACT 01 // RUBY</span>
+      </div>
+      <div class="drink-body">
+        <div class="drink-top"><h3>Crimson Ember</h3><span class="drink-price">1 290 ₽</span></div>
+        <p>Дистиллят суданской розы, красный апельсин, сухой вермут на кардамоне и лёгкий туман из вишнёвой щепы.</p>
+      </div>
+    </article>
+
+    <article class="drink-card">
+      <div class="drink-media">
+        <img src="../assets/solis-hero.jpg" loading="lazy" decoding="async" alt="Акт II — Smoked Cedar">
+        <span class="drink-num">ACT 02 // AMBER</span>
+      </div>
+      <div class="drink-body">
+        <div class="drink-top"><h3>Smoked Cedar</h3><span class="drink-price">1 450 ₽</span></div>
+        <p>Ржаной бурбон 12 лет, настойка на сибирском кедре, жжёный мёд и цельная глыба прозрачного льда.</p>
+      </div>
+    </article>
+
+    <article class="drink-card">
+      <div class="drink-media drink-media--citrus">
+        <img src="../assets/solis-glass.jpg" loading="lazy" decoding="async" alt="Акт III — Golden Yuzu">
+        <span class="drink-num">ACT 03 // CITRUS</span>
+      </div>
+      <div class="drink-body">
+        <div class="drink-top"><h3>Velvet Yuzu</h3><span class="drink-price">1 350 ₽</span></div>
+        <p>Японский джин, осветлённый сок юдзу, жасминовый дистиллят и солёная пудра из белого перца.</p>
+      </div>
+    </article>
+
+    <article class="drink-card">
+      <div class="drink-media drink-media--noir">
+        <img src="../assets/solis-hero.jpg" loading="lazy" decoding="async" alt="Акт IV — Noir Truffle">
+        <span class="drink-num">ACT 04 // NOIR</span>
+      </div>
+      <div class="drink-body">
+        <div class="drink-top"><h3>Noir Espresso</h3><span class="drink-price">1 520 ₽</span></div>
+        <p>Выдержанный ром, колд-брю Эфиопия 18 часов, масло чёрного трюфеля и биттер из какао-бобов.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- FAN CARDS + 3D PARALLAX TICKET -->
+<section class="pass-section" id="pass">
+  <div>
+    <div class="ed-kicker">03 // ДЕГУСТАЦИОННЫЕ СЕТЫ</div>
+    <h2 style="font-family:var(--font-serif);font-size:clamp(30px,3.8vw,48px);font-weight:400;line-height:1.1">Наведите на колоду — выберите формат вечера.</h2>
+    <div class="fan-stage">
+      <div class="fan-card" data-set="Дуэт за стойкой (3 900 ₽)">
+        <span class="fan-tag">SET 01 // BAR</span>
+        <div><h4>Дуэт за стойкой</h4><p>Два авторских акта + комплимент от шеф-бармена и виниловый сет.</p></div>
+        <span class="fan-tag">3 900 ₽</span>
+      </div>
+      <div class="fan-card" data-set="Ночная алхимия (6 800 ₽)">
+        <span class="fan-tag">SET 02 // SIGNATURE</span>
+        <div><h4>Ночная алхимия</h4><p>Полная дегустация из 4 актов с молекулярными пейрингами.</p></div>
+        <span class="fan-tag">6 800 ₽</span>
+      </div>
+      <div class="fan-card" data-set="Камерный стол 4–6 гостей (18 000 ₽)">
+        <span class="fan-tag">SET 03 // PRIVATE</span>
+        <div><h4>Камерная ложа</h4><p>Закрытый бархатный зал, персональный сомелье и редкие релизы.</p></div>
+        <span class="fan-tag">18 000 ₽</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D PARALLAX TICKET -->
+  <div class="ticket-scene">
+    <div class="parallax-ticket" id="parallaxTicket">
+      <div class="ticket-glare" id="ticketGlare"></div>
+      <div class="ticket-top">
+        <div class="ticket-brand">SOLIS // PASS</div>
+        <div class="ticket-serial" id="ticketSerial">NO. 04-891</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:0.14em">ИМЕННОЕ ПРИГЛАШЕНИЕ</div>
+      <div class="ticket-guest-name" id="ticketGuest">Гость Ночи</div>
+      <div class="ticket-meta-grid">
+        <div><span>ФОРМАТ</span><strong id="ticketSet">Ночная алхимия</strong></div>
+        <div><span>КОД ВХОДА</span><strong>SOLIS-04</strong></div>
+        <div><span>ЛОКАЦИЯ</span><strong>Малая Бронная, двор</strong></div>
+      </div>
+      <div class="ticket-input-row">
+        <input id="guestInput" type="text" placeholder="Введите ваше имя на пропуск..." maxlength="26">
+        <button class="ticket-btn" id="ticketBookBtn" type="button">Забронировать</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="ed-foot">
+  <span>SOLIS // NOCTURNE · DEMO CONCEPT 02</span>
+  <span>Lenis · GSAP Horizontal Pin · Read Along · Fan Cards · 3D Parallax Ticket · Weight Wave</span>
+</footer>
+
+<dialog class="modal" id="bookModal" closedby="any" aria-labelledby="bookTitle">
+  <div class="m-head">
+    <h3 id="bookTitle">Бронь пропуска</h3>
+    <button class="m-close" type="button" id="closeBookBtn" aria-label="Закрыть">&times;</button>
+  </div>
+  <form id="bookForm">
+    <div class="m-field">
+      <label for="bName">ВАШЕ ИМЯ</label>
+      <input id="bName" required placeholder="Елена">
+    </div>
+    <div class="m-field">
+      <label for="bContact">TELEGRAM / ТЕЛЕФОН</label>
+      <input id="bContact" required placeholder="@username или +7 ...">
+    </div>
+    <div class="m-field">
+      <label for="bTime">ВРЕМЯ ВИЗИТА</label>
+      <select id="bTime">
+        <option>Сегодня · 21:30</option>
+        <option>Сегодня · 23:00</option>
+        <option>Пятница · 22:00</option>
+        <option>Суббота · 22:30</option>
+      </select>
+    </div>
+    <button class="m-submit" type="submit" id="bookSubmit">Подтвердить пропуск в Telegram</button>
+    <div class="m-note" id="bookNote">Код входа придёт в личные сообщения</div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+  const TELEGRAM_CONFIG = { BOT_TOKEN: "", CHAT_ID: "" };
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // --- Lenis Smooth Scroll + Unified GSAP Ticker (single loop, zero double-rAF) ---
+  if (!prefersReduced && window.Lenis && window.gsap) {
+    const lenis = new Lenis({ duration: 0.95, smoothWheel: true, wheelMultiplier: 1.0 });
+    if (window.ScrollTrigger) {
+      gsap.registerPlugin(ScrollTrigger);
+      lenis.on("scroll", ScrollTrigger.update);
+    }
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  } else if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  // --- Weight Wave (GPU-composited transform/opacity, cached centers, 1 rAF on hover only) ---
+  const ww = document.getElementById("weightWave");
+  const rawWW = ww.textContent;
+  ww.innerHTML = rawWW.trim().split(/\s+/).map((word) =>
+    `<span style="display:inline-block;white-space:nowrap">${[...word].map((c) => `<span class="ww-char">${c}</span>`).join("")}</span>`
+  ).join(" ");
+  const wwChars = [...ww.querySelectorAll(".ww-char")];
+  let wwCenters = [];
+  let wwRectLeft = 0;
+  let wwMouseX = 0;
+  let wwRaf = 0;
+
+  function cacheWaveMetrics() {
+    const parentRect = ww.getBoundingClientRect();
+    wwRectLeft = parentRect.left;
+    wwCenters = wwChars.map((ch) => {
+      const r = ch.getBoundingClientRect();
+      return (r.left - wwRectLeft) + r.width * 0.5;
+    });
+  }
+
+  function renderWaveFrame() {
+    wwRaf = 0;
+    const localX = wwMouseX - wwRectLeft;
+    for (let i = 0; i < wwChars.length; i++) {
+      const dist = Math.abs(localX - wwCenters[i]);
+      const factor = Math.max(0, 1 - dist / 105);
+      const ch = wwChars[i];
+      if (factor > 0.02) {
+        const sc = 1 + factor * 0.22;
+        const lift = -factor * 4.5;
+        ch.style.transform = `translate3d(0,${lift.toFixed(1)}px,0) scale(${sc.toFixed(3)})`;
+        ch.style.opacity = (0.86 + factor * 0.14).toFixed(2);
+        ch.style.color = factor > 0.42 ? "#D4A85F" : "";
+      } else if (ch.style.transform) {
+        ch.style.transform = "";
+        ch.style.opacity = "";
+        ch.style.color = "";
+      }
+    }
+  }
+
+  if (!prefersReduced && window.matchMedia("(pointer: fine)").matches) {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(cacheWaveMetrics);
+    } else {
+      cacheWaveMetrics();
+    }
+    window.addEventListener("resize", cacheWaveMetrics, { passive: true });
+    ww.addEventListener("mouseenter", cacheWaveMetrics, { passive: true });
+    ww.addEventListener("mousemove", (e) => {
+      wwMouseX = e.clientX;
+      if (!wwRaf) wwRaf = requestAnimationFrame(renderWaveFrame);
+    }, { passive: true });
+    ww.addEventListener("mouseleave", () => {
+      if (wwRaf) { cancelAnimationFrame(wwRaf); wwRaf = 0; }
+      for (let i = 0; i < wwChars.length; i++) {
+        wwChars[i].style.transform = "";
+        wwChars[i].style.opacity = "";
+        wwChars[i].style.color = "";
+      }
+    }, { passive: true });
+  }
+
+  // --- Word Roll (DesignBookmark Motion) ---
+  const wrTrack = document.getElementById("wordRollTrack");
+  let wrIdx = 0;
+  if (!prefersReduced) {
+    setInterval(() => {
+      wrIdx = (wrIdx + 1) % 4;
+      wrTrack.style.transform = `translate3d(0,-${wrIdx * 22}px,0)`;
+    }, 2600);
+  }
+
+  // --- Copy Button Morph (DesignBookmark Motion) ---
+  const copyBtn = document.getElementById("copyPassBtn");
+  const copyLbl = document.getElementById("copyLbl");
+  copyBtn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText("SOLIS-04"); } catch (_) {}
+    copyBtn.classList.add("copied");
+    copyLbl.textContent = "Скопировано!";
+    setTimeout(() => { copyBtn.classList.remove("copied"); copyLbl.textContent = "Скопировать"; }, 1800);
+  });
+
+  // --- Read Along Manifesto + GPU Hero Parallax + Horizontal Pinned Gallery ---
+  const raEl = document.getElementById("readAlongText");
+  const goldWords = new Set(["дистилляцию,", "хрустальный", "тишины,", "замедлился."]);
+  raEl.innerHTML = raEl.textContent.trim().split(/\s+/).map((w) =>
+    `<span class="ra-word${goldWords.has(w.toLowerCase()) ? " gold" : ""}">${w}</span>`
+  ).join(" ");
+  const raWords = [...raEl.querySelectorAll(".ra-word")];
+
+  if (window.gsap && window.ScrollTrigger && !prefersReduced) {
+    // GPU-only subtle zoom entrance + parallax on hero photo (no clip-path/filter raster thrash)
+    gsap.fromTo("#heroBg", { scale: 1.07 }, { scale: 1.0, duration: 1.15, ease: "power3.out", force3D: true });
+    gsap.to("#heroBg", {
+      yPercent: 12,
+      ease: "none",
+      force3D: true,
+      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+    });
+
+    // Read Along word lighting on scroll (diff-only DOM updates)
+    let prevLit = -1;
+    ScrollTrigger.create({
+      trigger: ".manifesto-sec",
+      start: "top 78%",
+      end: "bottom 55%",
+      scrub: true,
+      onUpdate: (self) => {
+        const litCount = Math.floor(self.progress * raWords.length);
+        if (litCount === prevLit) return;
+        const from = Math.max(0, Math.min(prevLit, litCount));
+        const to = Math.min(raWords.length - 1, Math.max(prevLit, litCount));
+        for (let i = from; i <= to; i++) {
+          raWords[i].classList.toggle("lit", i <= litCount);
+        }
+        prevLit = litCount;
+      }
+    });
+
+    // Desktop Horizontal Pinned Scroll Gallery (scrub: true avoids double-lag with Lenis)
+    if (window.innerWidth > 960) {
+      const track = document.getElementById("horizTrack");
+      const getDist = () => Math.max(0, track.scrollWidth - window.innerWidth + 72);
+      gsap.to(track, {
+        x: () => -getDist(),
+        ease: "none",
+        force3D: true,
+        scrollTrigger: {
+          trigger: ".horiz-section",
+          start: "top 10%",
+          end: () => "+=" + getDist(),
+          pin: true,
+          scrub: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true
+        }
+      });
+    }
+  } else {
+    raWords.forEach((w) => w.classList.add("lit"));
+  }
+
+  // --- Fan Cards Selection + 3D Parallax Ticket (cached rect + 1 rAF + translate3d glare) ---
+  const ticket = document.getElementById("parallaxTicket");
+  const ticketGlare = document.getElementById("ticketGlare");
+  const ticketGuest = document.getElementById("ticketGuest");
+  const ticketSet = document.getElementById("ticketSet");
+  const guestInput = document.getElementById("guestInput");
+
+  document.querySelectorAll(".fan-card").forEach((c) => {
+    c.addEventListener("click", () => {
+      ticketSet.textContent = c.dataset.set.split(" (")[0];
+      document.getElementById("ticketSerial").textContent = "NO. 04-" + Math.floor(100 + Math.random() * 899);
+    });
+  });
+  guestInput.addEventListener("input", () => {
+    ticketGuest.textContent = guestInput.value.trim() || "Гость Ночи";
+  });
+
+  if (!prefersReduced && window.matchMedia("(pointer: fine)").matches) {
+    let tRect = null;
+    let tX = 0, tY = 0, tRaf = 0;
+
+    function renderTicket() {
+      tRaf = 0;
+      if (!tRect || !tRect.width) return;
+      const px = (tX - tRect.left) / tRect.width;
+      const py = (tY - tRect.top) / tRect.height;
+      const rx = (0.5 - py) * 12;
+      const ry = (px - 0.5) * 14;
+      ticket.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+      ticketGlare.style.transform = `translate3d(${(px * tRect.width).toFixed(1)}px,${(py * tRect.height).toFixed(1)}px,0)`;
+    }
+
+    ticket.addEventListener("mouseenter", () => {
+      tRect = ticket.getBoundingClientRect();
+      ticketGlare.style.opacity = "1";
+    }, { passive: true });
+    ticket.addEventListener("mousemove", (e) => {
+      if (!tRect) tRect = ticket.getBoundingClientRect();
+      tX = e.clientX;
+      tY = e.clientY;
+      if (!tRaf) tRaf = requestAnimationFrame(renderTicket);
+    }, { passive: true });
+    ticket.addEventListener("mouseleave", () => {
+      if (tRaf) { cancelAnimationFrame(tRaf); tRaf = 0; }
+      tRect = null;
+      ticket.style.transform = "rotateX(0deg) rotateY(0deg)";
+      ticketGlare.style.opacity = "0";
+    }, { passive: true });
+  }
+
+  // --- Modal Dialog + Light-Dismiss Fallback + Telegram Bot API ---
+  const bookModal = document.getElementById("bookModal");
+  const openBook = () => {
+    if (guestInput.value.trim()) document.getElementById("bName").value = guestInput.value.trim();
+    bookModal.showModal();
+  };
+  document.getElementById("openBookBtn").addEventListener("click", openBook);
+  document.getElementById("ticketBookBtn").addEventListener("click", openBook);
+  document.getElementById("closeBookBtn").addEventListener("click", () => bookModal.close());
+  if (!("closedBy" in HTMLDialogElement.prototype)) {
+    bookModal.addEventListener("click", (e) => {
+      if (e.target !== bookModal) return;
+      const r = bookModal.getBoundingClientRect();
+      if (!(r.top <= e.clientY && e.clientY <= r.bottom && r.left <= e.clientX && e.clientX <= r.right)) bookModal.close();
+    });
+  }
+
+  document.getElementById("bookForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("bookSubmit");
+    const note = document.getElementById("bookNote");
+    btn.textContent = "Оформляем пропуск...";
+    const text = `SOLIS // NOCTURNE — Бронь\nГость: ${document.getElementById("bName").value}\nКонтакт: ${document.getElementById("bContact").value}\nСет: ${ticketSet.textContent}\nВремя: ${document.getElementById("bTime").value}`;
+    try {
+      if (TELEGRAM_CONFIG.BOT_TOKEN && TELEGRAM_CONFIG.CHAT_ID) {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: TELEGRAM_CONFIG.CHAT_ID, text })
+        });
+        note.textContent = "Пропуск отправлен в Telegram!";
+      } else {
+        await new Promise((r) => setTimeout(r, 600));
+        note.textContent = "Демо-режим: укажите BOT_TOKEN и CHAT_ID вверху скрипта.";
+      }
+      btn.textContent = "Пропуск подтверждён";
+      setTimeout(() => { bookModal.close(); btn.textContent = "Подтвердить пропуск в Telegram"; }, 1400);
+    } catch (_) {
+      btn.textContent = "Повторить отправку";
+    }
+  });
+</script>
+</body>
+</html>
