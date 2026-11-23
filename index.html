@@ -130,6 +130,8 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    width: fit-content;
+    max-width: 100%;
     padding: 6px 14px;
     border-radius: 9999px;
     background: var(--surface);
@@ -139,7 +141,8 @@
     color: var(--muted);
     margin-bottom: 24px;
   }
-  .hero-kicker b { color: var(--accent); }
+  .hero-kicker b { color: var(--accent); letter-spacing: 0.02em; }
+  .kicker-meta { color: var(--muted); }
 
   h1.hero-h {
     font-family: var(--font-display);
@@ -458,7 +461,7 @@
     .tg-top-btn { height: 36px; white-space: nowrap; font-size: 11.5px; padding: 0 13px; }
     .wrap { padding: 0 14px; }
     .hero { padding: 26px 0 22px; }
-    .hero-kicker { font-size: 10px; padding: 5px 10px; margin-bottom: 14px; gap: 6px; flex-wrap: wrap; }
+    .hero-kicker { font-size: 10.5px; padding: 6px 12px; margin-bottom: 16px; gap: 8px; }
     h1.hero-h { font-size: clamp(22px, 6.2vw, 30px); line-height: 1.15; margin-bottom: 12px; }
     .hero-sub { font-size: 14px; line-height: 1.5; margin-bottom: 18px; }
     .hero-bar { gap: 8px; }
@@ -485,6 +488,42 @@
     .dock-wrap { bottom: 12px; max-width: calc(100vw - 20px); }
     .rubber-dock { gap: 4px; padding: 5px 7px; }
     .dock-item { height: 32px; padding: 0 9px; font-size: 10px; }
+  }
+  @media (max-width: 640px) {
+    .hero-kicker {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 7px;
+      width: 100%;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+      margin-bottom: 16px;
+    }
+    .kicker-brand {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      max-width: 100%;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: rgba(200, 255, 0, 0.08);
+      border: 1px solid rgba(200, 255, 0, 0.28);
+      font-size: 10.5px;
+      line-height: 1.25;
+      letter-spacing: 0.04em;
+    }
+    .kicker-sep { display: none; }
+    .kicker-meta {
+      display: block;
+      font-size: clamp(9.5px, 2.75vw, 10.5px);
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      padding-left: 2px;
+    }
   }
   @media (max-width: 390px) {
     .terms-grid { grid-template-columns: 1fr; }
@@ -517,8 +556,9 @@
 <main class="wrap">
   <section class="hero">
     <div class="hero-kicker">
-      <b>DESIGNBOOKMARK MOTION STACK</b>
-      <span>· 3 НЕСТАНДАРТНЫХ ДЕМО-ПРОЕКТА · ПОД КЛЮЧ ЗА 24–48 Ч</span>
+      <b class="kicker-brand">DESIGNBOOKMARK MOTION STACK</b>
+      <span class="kicker-sep" aria-hidden="true">·</span>
+      <span class="kicker-meta">3 НЕСТАНДАРТНЫХ ДЕМО-ПРОЕКТА · ПОД КЛЮЧ ЗА 24–48 Ч</span>
     </div>
     <h1 class="hero-h">
       Разработка сайтов, которые выглядят как

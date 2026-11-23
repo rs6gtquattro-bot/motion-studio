@@ -207,6 +207,8 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    width: fit-content;
+    max-width: 100%;
     padding: 6px 14px;
     border-radius: 9999px;
     background: var(--surface);
@@ -776,10 +778,10 @@
     .brand-mark { font-size: 10.5px; gap: 6px; letter-spacing: 0.03em; }
     .island-cta { padding: 6px 10px; font-size: 10.5px; }
     .hero { padding: 68px 0 30px; gap: 20px; }
-    .hero-badge { font-size: 10px; padding: 5px 10px; margin-bottom: 12px; }
+    .eyebrow, .hero-badge { font-size: clamp(9.5px, 2.7vw, 10.5px); padding: 5px 11px; margin-bottom: 14px; gap: 6px 8px; flex-wrap: wrap; }
     h1.hero-title { font-size: clamp(24px, 7.2vw, 32px); margin-bottom: 12px; }
     .hero-lead { font-size: 13.5px; line-height: 1.52; margin-bottom: 16px; }
-    .hero-cta-row { gap: 8px; margin-bottom: 16px; }
+    .hero-actions, .hero-cta-row { gap: 8px; margin-bottom: 18px; align-items: stretch; }
     .mag-btn { min-height: 44px; height: auto; padding: 10px 14px; font-size: 12px; line-height: 1.2; text-align: center; flex: 1; min-width: 140px; }
     .hero-specs-strip { grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 14px; }
     .mini-stat-val { font-size: 15px; }
